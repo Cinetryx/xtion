@@ -29,13 +29,11 @@ public:
     for ( int i = 0; i < users.getSize(); ++i ) {
       const nite::UserData& user = users[i];
       
-      // 
-新しく検出したユーザーの場合は、スケルトントラッキングを開始する
+      // 新しく検出したユーザーの場合は、スケルトントラッキングを開始する
       if ( user.isNew() ) {
         userTracker.startSkeletonTracking( user.getId() );
       }
-      // 
-すでに検出したユーザーで、消失していない場合は、スケルトンの位置を表示する
+      // すでに検出したユーザーで、消失していない場合は、スケルトンの位置を表示する
       else if ( !user.isLost() ) {
         showSkeleton( depthImage, userTracker, user );
       }
@@ -73,13 +71,11 @@ private:
                            CV_8UC4 );
       
       // Depth データおよびユーザーインデックスを取得する
-      openni::DepthPixel* depth = 
-(openni::DepthPixel*)depthFrame.getData();
+      openni::DepthPixel* depth = (openni::DepthPixel*)depthFrame.getData();
       const nite::UserId* pLabels = userFrame.getUserMap().getPixels();
       
       // 1ピクセルずつ調べる
-      for ( int i = 0; i < (depthFrame.getDataSize() / 
-sizeof(openni::DepthPixel)); ++i ) {
+      for ( int i = 0; i < (depthFrame.getDataSize() / sizeof(openni::DepthPixel)); ++i ) {
         // カラー画像インデックスを生成
         int index = i * 4;
         
@@ -107,8 +103,7 @@ sizeof(openni::DepthPixel)); ++i ) {
   }
   
   // スケルトンの検出
-  void showSkeleton( cv::Mat& depthImage, nite::UserTracker& 
-userTracker, const nite::UserData& user )
+  void showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user )
   {
     // スケルトンを取得し、追跡状態を確認する
     const nite::Skeleton& skeelton = user.getSkeleton();
@@ -119,8 +114,7 @@ userTracker, const nite::UserData& user )
     // すべての関節を描画する
     for ( int j = 0; j <= 14; ++j ) {
       // 関節情報を取得し、信頼度の数値が一定以上の場所のみ表示する
-      const nite::SkeletonJoint& joint = skeelton.getJoint( 
-(nite::JointType)j );
+      const nite::SkeletonJoint& joint = skeelton.getJoint( (nite::JointType)j );
       if ( joint.getPositionConfidence() < 0.7f ) {
         continue;
       }
@@ -129,8 +123,7 @@ userTracker, const nite::UserData& user )
       const nite::Point3f& position = joint.getPosition();
       float x = 0, y = 0;
       userTracker.convertJointCoordinatesToDepth(
-                                                 position.x, position.y, 
-position.z, &x, &y );
+                                                 position.x, position.y, position.z, &x, &y );
       
       // 円を表示する
       cv::circle( depthImage, cvPoint( (int)x, (int)y ),
@@ -171,3 +164,4 @@ int main(int argc, const char * argv[])
   
   return 0;
 }
+
