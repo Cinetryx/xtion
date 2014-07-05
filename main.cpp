@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <OpenNI.h>
 #include <NiTE.h>
 #include <opencv2/opencv.hpp>
 
@@ -13,14 +14,28 @@ class NiteApp
         void initialize()
         {
             userTracker.create();
+
+	    openni::Status ret = device.open(openni::ANY_DEVICE);
+	    //if (ret != openni::STATUS_OK) {
+            //throw std::runtime_error( "openni::Device::open() failed." );
+
+	    //}
+
+	    colorStream.create(device, openni::SENSOR_COLOR);
+	    changeResolution(colorStream);
+	    colorStream.start();
         }
 
         void update()
         {
+            openni::VideoFrameRef colorFrame;
             nite::UserTrackerFrameRef userFrame;
+
             userTracker.readFrame(&userFrame);
+            colorStream.readFrame(&colorFrame);
 
             depthImage = showUser(userFrame);
+            colorImage = showColorStream(colorFrame);
 
             const nite::Array<nite::UserData>& users = userFrame.getUsers();
             for (int i = 0; i < users.getSize(); ++i) {
@@ -35,11 +50,21 @@ class NiteApp
             }
 
             cv::imshow("Skeleton", depthImage);
+            cv::imshow("ColorStream", colorImage);
         }
 
 
 
     private:
+
+        void changeResolution(openni::VideoStream& stream)
+        {
+            openni::VideoMode mode = stream.getVideoMode();
+            mode.setResolution(640, 480);
+            mode.setFps(30);
+            stream.setVideoMode(mode);
+        }
+
 
         cv::Mat showUser(nite::UserTrackerFrameRef& userFrame)
         {
@@ -87,6 +112,17 @@ class NiteApp
             return depthImage;
         }
 
+        cv::Mat showColorStream(const openni::VideoFrameRef& colorFrame)
+        {
+            cv::Mat colorImage = cv::Mat(colorFrame.getHeight(),
+                                         colorFrame.getWidth(),
+                                         CV_8UC3, (unsigned char*)colorFrame.getData());
+
+            cv::cvtColor(colorImage, colorImage, CV_RGB2BGR);
+
+            return colorImage;
+        }
+
 
         void showSkeleton(cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user)
         {
@@ -116,6 +152,11 @@ class NiteApp
         nite::UserTracker userTracker;
 
         cv::Mat depthImage;
+
+        openni::Device device;
+        openni::VideoStream colorStream;
+
+        cv::Mat colorImage;
 };
 
 
@@ -124,6 +165,7 @@ class NiteApp
 int main(int argc, const char * argv[])
 {
     try {
+        openni::OpenNI::initialize();
         nite::NiTE::initialize();
 
         NiteApp app;
