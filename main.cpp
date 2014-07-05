@@ -84,7 +84,7 @@ class NiteApp
         }
 
 
-        void showSkeleton(cv::Mat& depthImage, nite::UserTracker& userTracker const nite::UserData& user)
+        void showSkeleton(cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user)
         {
             const nite::Skeleton& skeelton = user.getSkeleton();
             if (skeelton.getState() != nite::SKELETON_TRACKED) {
@@ -99,7 +99,7 @@ class NiteApp
 
                 const nite::Point3f& position = joint.getPosition();
                 float x = 0, y = 0;
-                userTracker.convertJointCoordinatesToDepth(position.x, positon.y, position.z, &x, &y);
+                userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x, &y);
 
                 cv::circle(depthImage, cvPoint((int)x, (int)y), 5, cv::Scalar(0, 0, 255), -1);
             }
@@ -110,7 +110,7 @@ class NiteApp
         nite::UserTracker userTracker;
 
         cv::Mat depthImage;
-}
+};
 
 
 
@@ -123,7 +123,7 @@ int main(int argc, const char * argv[])
         NiteApp app;
         app.initialize();
 
-        while true {
+        while (true) {
             app.update();
 
             int key = cv::waitKey(10);

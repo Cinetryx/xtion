@@ -23,7 +23,7 @@ LIB_DIRS += $(OPENNI2_REDIST) $(NITE2_REDIST64)
 
 USED_LIBS += OpenNI2 NiTE2  opencv_core opencv_highgui opencv_imgproc
 
-EXE_NAME = User
+EXE_NAME = Skeleton
 
 CFLAGS += -Wall
 
