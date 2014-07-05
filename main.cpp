@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include <OpenNI.h>
 #include <NiTE.h>
 #include <opencv2/opencv.hpp>
