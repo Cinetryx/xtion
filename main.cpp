@@ -17,11 +17,31 @@ public:
   // フレーム更新処理
   void update()
   {
+    // ユーザーフレームを取得する
     nite::UserTrackerFrameRef userFrame;
     userTracker.readFrame( &userFrame );
     
+    // ユーザー位置を描画する
     depthImage = showUser( userFrame );
-    cv::imshow( "User", depthImage );
+    
+    // 検出したユーザーを取得する
+    const nite::Array<nite::UserData>& users = userFrame.getUsers();
+    for ( int i = 0; i < users.getSize(); ++i ) {
+      const nite::UserData& user = users[i];
+      
+      // 
+新しく検出したユーザーの場合は、スケルトントラッキングを開始する
+      if ( user.isNew() ) {
+        userTracker.startSkeletonTracking( user.getId() );
+      }
+      // 
+すでに検出したユーザーで、消失していない場合は、スケルトンの位置を表示する
+      else if ( !user.isLost() ) {
+        showSkeleton( depthImage, userTracker, user );
+      }
+    }
+    
+    cv::imshow( "Skeleton", depthImage );
   }
   
 private:
@@ -53,11 +73,13 @@ private:
                            CV_8UC4 );
       
       // Depth データおよびユーザーインデックスを取得する
-      openni::DepthPixel* depth = (openni::DepthPixel*)depthFrame.getData();
+      openni::DepthPixel* depth = 
+(openni::DepthPixel*)depthFrame.getData();
       const nite::UserId* pLabels = userFrame.getUserMap().getPixels();
       
       // 1ピクセルずつ調べる
-      for ( int i = 0; i < (depthFrame.getDataSize() / sizeof(openni::DepthPixel)); ++i ) {
+      for ( int i = 0; i < (depthFrame.getDataSize() / 
+sizeof(openni::DepthPixel)); ++i ) {
         // カラー画像インデックスを生成
         int index = i * 4;
         
@@ -82,6 +104,38 @@ private:
     }
     
     return depthImage;
+  }
+  
+  // スケルトンの検出
+  void showSkeleton( cv::Mat& depthImage, nite::UserTracker& 
+userTracker, const nite::UserData& user )
+  {
+    // スケルトンを取得し、追跡状態を確認する
+    const nite::Skeleton& skeelton = user.getSkeleton();
+    if ( skeelton.getState() != nite::SKELETON_TRACKED ) {
+      return;
+    }
+    
+    // すべての関節を描画する
+    for ( int j = 0; j <= 14; ++j ) {
+      // 関節情報を取得し、信頼度の数値が一定以上の場所のみ表示する
+      const nite::SkeletonJoint& joint = skeelton.getJoint( 
+(nite::JointType)j );
+      if ( joint.getPositionConfidence() < 0.7f ) {
+        continue;
+      }
+      
+      // 3次元の座標を2次元の座標に変換する
+      const nite::Point3f& position = joint.getPosition();
+      float x = 0, y = 0;
+      userTracker.convertJointCoordinatesToDepth(
+                                                 position.x, position.y, 
+position.z, &x, &y );
+      
+      // 円を表示する
+      cv::circle( depthImage, cvPoint( (int)x, (int)y ),
+                 5, cv::Scalar( 0, 0, 255 ), -1 );
+    }
   }
   
 private:
@@ -117,4 +171,3 @@ int main(int argc, const char * argv[])
   
   return 0;
 }
-
