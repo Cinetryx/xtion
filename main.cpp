@@ -6,6 +6,8 @@
 
 class NiteApp
 {
+
+
     public:
 
         void initialize()
@@ -34,6 +36,8 @@ class NiteApp
 
             cv::imshow("Skeleton", depthImage);
         }
+
+
 
     private:
 
@@ -105,6 +109,8 @@ class NiteApp
             }
         }
 
+
+
     private:
         
         nite::UserTracker userTracker;
@@ -132,6 +138,7 @@ int main(int argc, const char * argv[])
             }
         }
     }
+
     catch (std::exception&) {
         std::cout << openni::OpenNI::getExtendedError() << std::endl;
     }
