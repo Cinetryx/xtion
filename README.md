@@ -25,10 +25,10 @@
 --------
 ・Lubuntu12.04 (Ubuntu12.04, Xubuntu12.04)  
 ・Intel 64bit CPU の PC  
-・Xtion Pro LIVE (Kinect) 
-・OpenNI2
-・NiTE2
-・OpenCV
+・Xtion Pro LIVE (Kinect)   
+・OpenNI2  
+・NiTE2  
+・OpenCV  
 ※（）内のでも代用が可能です。  
 
 使い方
