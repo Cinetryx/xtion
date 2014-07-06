@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include <OpenNI.h>
 #include <NiTE.h>
 #include <opencv2/opencv.hpp>
@@ -18,10 +19,9 @@ class NiteApp
             userTracker.create();
 
 	    openni::Status ret = device.open(openni::ANY_DEVICE);
-	    //if (ret != openni::STATUS_OK) {
-            //throw std::runtime_error( "openni::Device::open() failed." );
-
-	    //}
+	    if (ret != openni::STATUS_OK) {
+            throw std::runtime_error( "openni::Device::open() failed." );
+	    }
 
 	    colorStream.create(device, openni::SENSOR_COLOR);
 	    changeResolution(colorStream);
