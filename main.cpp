@@ -3,30 +3,33 @@
 #include <OpenNI.h>
 #include <NiTE.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 
-enum Pose {NONE, OUT, MOUNTAIN, RIVER};
+enum Pose {NONE, OUT, MOUNTAIN, RIVER, OBAKE};
 
 
 class NiteApp
 {
 
-
     public:
+
 
         void initialize()
         {
             userTracker.create();
 
-	    openni::Status ret = device.open(openni::ANY_DEVICE);
-	    if (ret != openni::STATUS_OK) {
-            throw std::runtime_error( "openni::Device::open() failed." );
-	    }
+	        openni::Status ret = device.open(openni::ANY_DEVICE);
+	        if (ret != openni::STATUS_OK) {
+                throw std::runtime_error( "openni::Device::open() failed." );
+	        }
 
-	    colorStream.create(device, openni::SENSOR_COLOR);
-	    changeResolution(colorStream);
-	    colorStream.start();
+	        colorStream.create(device, openni::SENSOR_COLOR);
+	        changeResolution(colorStream);
+
+	        colorStream.start();
         }
+
 
         void update()
         {
@@ -40,6 +43,7 @@ class NiteApp
             colorImage = showColorStream(colorFrame);
 
             const nite::Array<nite::UserData>& users = userFrame.getUsers();
+
             for (int i = 0; i < users.getSize(); ++i) {
                 const nite::UserData& user = users[i];
 
@@ -154,10 +158,11 @@ class NiteApp
                 y3[j] = position.y;
                 z3[j] = position.z;
 
-                std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
+                //std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
             }
 
             Pose checkedPose = checkPose(x3, y3, z3, depthImage);
+            std::cout << joint_name[0] << ":\t" << (int)y3[0] << "\t\t" << joint_name[6] << ":\t" << (int)y3[6] << "\n";
 
         }
 
@@ -172,9 +177,20 @@ class NiteApp
                 strcpy(checkedPose_c, "OUT");
                 checkedPose = OUT;
             }*/
-            if (y3[0] > y3[6] && y3[0] > y3[7]) {
+            if (y3[0] < y3[6] && y3[0] < y3[7]) {
                 strcpy(checkedPose_c, "MOUNTAIN");
                 checkedPose = MOUNTAIN;
+                ehonnImage = cv::imread("./DaredaOre.jpg");
+                imshow("Ehon", ehonnImage);
+            }
+            else if ((y3[8] < y3[6]) && (y3[8] < y3[7]) && (y3[2] > y3[6]) && (y3[3] > y3[7])) {
+                strcpy(checkedPose_c, "OBAKE");
+                checkedPose = OBAKE;
+                ehonnImage = cv::imread("./Dareda.jpg");
+                imshow("Ehon", ehonnImage);
+            }
+            else {
+                cv::destroyWindow("Ehon");
             }
             
             ss << "Pose:" << checkedPose_c;
@@ -188,13 +204,13 @@ class NiteApp
     private:
         
         nite::UserTracker userTracker;
-
-        cv::Mat depthImage;
-
-        openni::Device device;
         openni::VideoStream colorStream;
 
+        cv::Mat depthImage;
         cv::Mat colorImage;
+        cv::Mat ehonnImage;
+
+        openni::Device device;
 };
 
 
