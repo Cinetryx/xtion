@@ -173,7 +173,7 @@ class NiteApp
             }
             
             ss << "Pose:" << checkedPose_c;
-            cv::putText(depthImage, ss.str(), cv::Point(0, 50), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(255));
+            cv::putText(depthImage, ss.str(), cv::Point(0, 50), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 0), 2);
             return checkedPose;
         }
 
