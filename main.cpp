@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 
-enum Pose {NONE, MOUNTAIN, RIVER};
+enum Pose {NONE, OUT, MOUNTAIN, RIVER};
 
 
 class NiteApp
@@ -149,29 +149,31 @@ class NiteApp
 
                 cv::circle(depthImage, cvPoint((int)x[j], (int)y[j]), 5, cv::Scalar(0, 0, 255), -1);
 
-                //std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
+                std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
             }
 
-            Pose checkedPose = checkPose(x, y);
-            if (checkedPose == MOUNTAIN) {
-                std::cout << "MOUNTAIN\n";
-                std::cout << "\tHEAD: " << (int)y[0] << "\tLEFT_HAND" << (int)y[6] << "\tRIGT_HAND" << (int)y[7] << '\n';
-            }
-            else if (checkedPose == NONE) {
-                std::cout << "NONE\n";
-            }
+            Pose checkedPose = checkPose(x, y, depthImage);
 
         }
 
 
-        Pose checkPose(float *x, float *y)
+        Pose checkPose(float *x, float *y, cv::Mat& depthImage)
         {
+            char checkedPose_c[15] = "NONE";
             Pose checkedPose = NONE;
+            std::stringstream ss;
 
-            if (y[0] > y[6] && y[0] > y[7]) {
+            if (y[0] == 0 || x[0] == 0) {
+                strcpy(checkedPose_c, "OUT");
+                checkedPose = OUT;
+            }
+            else if (y[0] > y[6] && y[0] > y[7]) {
+                strcpy(checkedPose_c, "MOUNTAIN");
                 checkedPose = MOUNTAIN;
             }
-
+            
+            ss << "Pose:" << checkedPose_c;
+            cv::putText(depthImage, ss.str(), cv::Point(0, 50), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(255));
             return checkedPose;
         }
 
