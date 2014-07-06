@@ -134,7 +134,8 @@ class NiteApp
                 return;
             }
 
-            float x[15], y[15];
+            float x, y;
+            float x3[15], y3[15], z3[15];
             char joint_name[15][15] = {"HEAD_HEAD", "NECK_NECK", "LEFT_SHOULDER", "RIGT_SHOULDER", "LEFT_ELBOW", "RIGT_ELBOW", "LEFT_HAND", "RIGT_HAND",
                                        "TORSO_TORSO", "LEFT_HIP", "RIGT_HIP", "LEFT_KNEE", "RIGT_KNEE", "LEFT_FOOT", "RIGT_FOOT"};
             
@@ -145,29 +146,33 @@ class NiteApp
                 }
 
                 const nite::Point3f& position = joint.getPosition();
-                userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x[j], &y[j]);
+                userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x, &y);
 
-                cv::circle(depthImage, cvPoint((int)x[j], (int)y[j]), 5, cv::Scalar(0, 0, 255), -1);
+                cv::circle(depthImage, cvPoint((int)x, (int)y), 5, cv::Scalar(0, 0, 255), -1);
 
-                std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
+                x3[j] = position.x;
+                y3[j] = position.y;
+                z3[j] = position.z;
+
+                std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
             }
 
-            Pose checkedPose = checkPose(x, y, depthImage);
+            Pose checkedPose = checkPose(x3, y3, z3, depthImage);
 
         }
 
 
-        Pose checkPose(float *x, float *y, cv::Mat& depthImage)
+        Pose checkPose(float *x3, float *y3, float *z3, cv::Mat& depthImage)
         {
             char checkedPose_c[15] = "NONE";
             Pose checkedPose = NONE;
             std::stringstream ss;
 
-            if (y[0] == 0 || x[0] == 0) {
+            /*if (y3[0] == 0 || x3[0] == 0) {
                 strcpy(checkedPose_c, "OUT");
                 checkedPose = OUT;
-            }
-            else if (y[0] > y[6] && y[0] > y[7]) {
+            }*/
+            if (y3[0] > y3[6] && y3[0] > y3[7]) {
                 strcpy(checkedPose_c, "MOUNTAIN");
                 checkedPose = MOUNTAIN;
             }
