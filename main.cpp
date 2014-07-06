@@ -130,6 +130,10 @@ class NiteApp
                 return;
             }
 
+            float x[15], y[15];
+            char joint_name[15][15] = {"HEAD_HEAD", "NECK_NECK", "LEFT_SHOULDER", "RIGT_SHOULDER", "LEFT_ELBOW", "RIGT_ELBOW", "LEFT_HAND", "RIGT_HAND",
+                                       "TORSO_TORSO", "LEFT_HIP", "RIGT_HIP", "LEFT_KNEE", "RIGT_KNEE", "LEFT_FOOT", "RIGT_FOOT"};
+
             for (int j = 0; j <= 14; ++j) {
                 const nite::SkeletonJoint& joint = skeelton.getJoint((nite::JointType)j);
                 if (joint.getPositionConfidence() < 0.7f) {
@@ -137,16 +141,14 @@ class NiteApp
                 }
 
                 const nite::Point3f& position = joint.getPosition();
-                float x = 0, y = 0;
-                userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x, &y);
+                userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x[j], &y[j]);
 
-                cv::circle(depthImage, cvPoint((int)x, (int)y), 5, cv::Scalar(0, 0, 255), -1);
+                cv::circle(depthImage, cvPoint((int)x[j], (int)y[j]), 5, cv::Scalar(0, 0, 255), -1);
 
-                if (j == 0) {
-                    std::cout << "Joint X:" << x << "Joint Y:" << y << '\n';
-                }
+                std::cout << joint_name[j] << "\t\tX:" << x[j] << "\t\tY:" << y[j] << '\n';
 
             }
+
         }
 
 
