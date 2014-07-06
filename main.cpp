@@ -4,6 +4,9 @@
 #include <opencv2/opencv.hpp>
 
 
+enum Pose {NONE, MOUNTAIN, RIVER};
+
+
 class NiteApp
 {
 
@@ -146,11 +149,31 @@ class NiteApp
 
                 cv::circle(depthImage, cvPoint((int)x[j], (int)y[j]), 5, cv::Scalar(0, 0, 255), -1);
 
-                std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
+                //std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
+            }
+
+            Pose checkedPose = checkPose(x, y);
+            if (checkedPose == MOUNTAIN) {
+                std::cout << "MOUNTAIN\n";
+                std::cout << "\tHEAD: " << (int)y[0] << "\tLEFT_HAND" << (int)y[6] << "\tRIGT_HAND" << (int)y[7] << '\n';
+            }
+            else if (checkedPose == NONE) {
+                std::cout << "NONE\n";
             }
 
         }
 
+
+        Pose checkPose(float *x, float *y)
+        {
+            Pose checkedPose = NONE;
+
+            if (y[0] > y[6] && y[0] > y[7]) {
+                checkedPose = MOUNTAIN;
+            }
+
+            return checkedPose;
+        }
 
 
 
