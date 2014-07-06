@@ -142,8 +142,9 @@ class NiteApp
 
                 cv::circle(depthImage, cvPoint((int)x, (int)y), 5, cv::Scalar(0, 0, 255), -1);
 
-                std::cout << "Joint X:" << x << '\n';
-                std::cout << "Joint Y:" << y << '\n';
+                if (j == 0) {
+                    std::cout << "Joint X:" << x << "Joint Y:" << y << '\n';
+                }
 
             }
         }
