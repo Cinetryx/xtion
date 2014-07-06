@@ -141,6 +141,10 @@ class NiteApp
                 userTracker.convertJointCoordinatesToDepth(position.x, position.y, position.z, &x, &y);
 
                 cv::circle(depthImage, cvPoint((int)x, (int)y), 5, cv::Scalar(0, 0, 255), -1);
+
+                std::cout << "Joint X:" << x << '\n';
+                std::cout << "Joint Y:" << y << '\n';
+
             }
         }
 
