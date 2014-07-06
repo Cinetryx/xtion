@@ -111,6 +111,7 @@ class NiteApp
             return depthImage;
         }
 
+
         cv::Mat showColorStream(const openni::VideoFrameRef& colorFrame)
         {
             cv::Mat colorImage = cv::Mat(colorFrame.getHeight(),
@@ -133,7 +134,7 @@ class NiteApp
             float x[15], y[15];
             char joint_name[15][15] = {"HEAD_HEAD", "NECK_NECK", "LEFT_SHOULDER", "RIGT_SHOULDER", "LEFT_ELBOW", "RIGT_ELBOW", "LEFT_HAND", "RIGT_HAND",
                                        "TORSO_TORSO", "LEFT_HIP", "RIGT_HIP", "LEFT_KNEE", "RIGT_KNEE", "LEFT_FOOT", "RIGT_FOOT"};
-
+            
             for (int j = 0; j <= 14; ++j) {
                 const nite::SkeletonJoint& joint = skeelton.getJoint((nite::JointType)j);
                 if (joint.getPositionConfidence() < 0.7f) {
@@ -145,11 +146,12 @@ class NiteApp
 
                 cv::circle(depthImage, cvPoint((int)x[j], (int)y[j]), 5, cv::Scalar(0, 0, 255), -1);
 
-                std::cout << joint_name[j] << "\t\tX:" << x[j] << "\t\tY:" << y[j] << '\n';
-
+                std::cout << joint_name[j] << "\t\tX:" << (int)x[j] << "\t\tY:" << (int)y[j] << '\n';
             }
 
         }
+
+
 
 
 
