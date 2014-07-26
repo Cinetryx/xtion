@@ -1,5 +1,5 @@
 /****	ShakaijissouProject PROGRAM			****/
-/****	2014 OyNCT KawamuraKen Kinect Term		****?
+/****	2014 OyNCT KawamuraKen Kinect Term		****/
 /****	Designed On 2014.jul.15 By Tokunn		****/
 /****	Update On 2014.Jul.21 By Tokunn add comment	****/
 
