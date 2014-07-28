@@ -166,11 +166,11 @@ class NiteApp
                 y3[j] = position.y;
                 z3[j] = position.z;
 
-                //std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
+                std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
             }
 
             Pose checkedPose = checkPose(x3, y3, z3, depthImage);
-            std::cout << joint_name[0] << ":\t" << (int)y3[0] << "\t\t" << joint_name[6] << ":\t" << (int)y3[6] << "\n";
+            //std::cout << joint_name[0] << ":\t" << (int)y3[0] << "\t\t" << joint_name[6] << ":\t" << (int)y3[6] << "\n";
 
         }
 
