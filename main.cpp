@@ -71,6 +71,9 @@ class NiteApp
 
 
     private:
+        double to_deg( double r ) {
+            return r * 180.0 / (atan(1.0) * 4.0);
+        }
 
         void changeResolution(openni::VideoStream& stream)
         {
