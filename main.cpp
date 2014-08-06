@@ -1,8 +1,8 @@
 /***********************************************************/
-/****	ShakaijissouProject PROGRAM			****/
-/****	2014 OyNCT KawamuraKen Kinect Term		****/
-/****	Designed On 2014.jul.15 By Tokunn		****/
-/****	Update On 2014.Jul.21 By Tokunn add comment	****/
+/****	ShakaijissouProject PROGRAM			            ****/
+/****	2014 OyNCT KawamuraKen Kinect Term		        ****/
+/****	Designed On 2014.jul.15 By Tokunn		        ****/
+/****	Update On 2014.Jul.21 By Tokunn add comment	    ****/
 /***********************************************************/
 
 
@@ -170,29 +170,24 @@ class NiteApp
             }
 
             Pose checkedPose = checkPose(x3, y3, z3, depthImage);
-            //std::cout << joint_name[0] << ":\t" << (int)y3[0] << "\t\t" << joint_name[6] << ":\t" << (int)y3[6] << "\n";
 
         }
 
 
         Pose checkPose(float *x3, float *y3, float *z3, cv::Mat& depthImage)
         {
-            char checkedPose_c[15] = "NONE";
+            char checkedPose_print[15] = "NONE";
             Pose checkedPose = NONE;
             std::stringstream ss;
 
-            /*if (y3[0] == 0 || x3[0] == 0) {
-                strcpy(checkedPose_c, "OUT");
-                checkedPose = OUT;
-            }*/
             if (y3[0] < y3[6] && y3[0] < y3[7]) {
-                strcpy(checkedPose_c, "MOUNTAIN");
+                strcpy(checkedPose_print, "MOUNTAIN");
                 checkedPose = MOUNTAIN;
                 ehonnImage = cv::imread("./DaredaOre.jpg");
                 imshow("Ehon", ehonnImage);
             }
             else if ((y3[8] < y3[6]) && (y3[8] < y3[7]) && (y3[2] > y3[6]) && (y3[3] > y3[7])) {
-                strcpy(checkedPose_c, "OBAKE");
+                strcpy(checkedPose_print, "OBAKE");
                 checkedPose = OBAKE;
                 ehonnImage = cv::imread("./Dareda.jpg");
                 imshow("Ehon", ehonnImage);
@@ -201,7 +196,7 @@ class NiteApp
                 cv::destroyWindow("Ehon");
             }
             
-            ss << "Pose:" << checkedPose_c;
+            ss << "Pose:" << checkedPose_print;
             cv::putText(depthImage, ss.str(), cv::Point(0, 50), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 0), 2);
             return checkedPose;
         }
