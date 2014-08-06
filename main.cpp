@@ -6,6 +6,7 @@
 /***********************************************************/
 
 
+#include <math.h>
 #include <iostream>
 #include <stdexcept>
 #include <OpenNI.h>
@@ -166,7 +167,7 @@ class NiteApp
                 y3[j] = position.y;
                 z3[j] = position.z;
 
-                std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
+                // std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
             }
 
             Pose checkedPose = checkPose(x3, y3, z3, depthImage);
@@ -180,16 +181,21 @@ class NiteApp
             Pose checkedPose = NONE;
             std::stringstream ss;
 
-            if (y3[0] < y3[6] && y3[0] < y3[7]) {
-                strcpy(checkedPose_print, "MOUNTAIN");
-                checkedPose = MOUNTAIN;
-                ehonnImage = cv::imread("./DaredaOre.jpg");
-                imshow("Ehon", ehonnImage);
+            if (y3[0] > y3[6] && y3[0] < y3[7]) {   // Check Majoko
+                double theta_shordar_elbow = to_deg( atan( y3[5] - y3[3], x3[5] - x3[3] ) );    // atan( shor-el ) to degree
+                double theta_elbow_hand = to_deg( atan( y3[7] - y3[5], x3[7] - x3[5] ) );       // atan( el-han ) to degree
+                double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
+                if ( theta_diff < 20 ) {
+                    strcpy(checkedPose_print, "MAJOKO");
+                    //checkedPose = MOUNTAIN;
+                    ehonnImage = cv::imread("./majoko.jpg");
+                    imshow("Ehon", ehonnImage);
+                }
             }
-            else if ((y3[8] < y3[6]) && (y3[8] < y3[7]) && (y3[2] > y3[6]) && (y3[3] > y3[7])) {
-                strcpy(checkedPose_print, "OBAKE");
-                checkedPose = OBAKE;
-                ehonnImage = cv::imread("./Dareda.jpg");
+            else if ((y3[8] < y3[6]) && (y3[8] < y3[7]) && (y3[2] > y3[6]) && (y3[3] > y3[7])) {    // Check Kaidann Resutoran
+                strcpy(checkedPose_print, "KAIDAN");
+                //checkedPose = OBAKE;
+                ehonnImage = cv::imread("./kaidan.jpg");
                 imshow("Ehon", ehonnImage);
             }
             else {
