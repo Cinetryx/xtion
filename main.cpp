@@ -188,6 +188,7 @@ class NiteApp
                 double theta_shordar_elbow = to_deg( atan2( (y3[5] - y3[3]), (x3[5] - x3[3]) ) );    // atan( shor-el ) to degree
                 double theta_elbow_hand = to_deg( atan2( y3[7] - y3[5], x3[7] - x3[5] ) );       // atan( el-han ) to degree
                 double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
+                std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
                 if ( theta_diff < 20 ) {
                     strcpy(checkedPose_print, "MAJOKO");
                     //checkedPose = MOUNTAIN;
