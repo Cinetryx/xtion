@@ -201,12 +201,13 @@ class NiteApp
             int LEFT_FOOT = 13;
             int RIGT_FOOT = 14;
 
-            if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {   /** Check Majoko **/
+            /** Check Majoko **/
+            if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {
 
                 double theta_shordar_elbow = to_deg( atan2( (y3[ RIGT_ELBOW ] - y3[ RIGT_SHOULDER ]), (x3[ RIGT_ELBOW ] - x3[ RIGT_SHOULDER ]) ) );    // atan( shor-el ) to degree
                 double theta_elbow_hand = to_deg( atan2( y3[ RIGT_HAND ] - y3[ RIGT_ELBOW ], x3[ RIGT_HAND ] - x3[ RIGT_ELBOW ] ) );       // atan( el-han ) to degree
                 double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
-                std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
+                //std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
 
                 if ( theta_diff < accidental_deg ) {
                     strcpy(checkedPose_print, "MAJOKO");
@@ -216,20 +217,37 @@ class NiteApp
                 }
             }
 
-            else if ((y3[ TORSO_TORSO ] < y3[ LEFT_HAND ]) && (y3[ TORSO_TORSO ] < y3[ RIGT_HAND ]) && (y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {    /** Check Kaidann Resutoran **/
+            /** Check Kaidan Restaurant **/
+            if ((y3[ TORSO_TORSO ] < y3[ LEFT_HAND ]) && (y3[ TORSO_TORSO ] < y3[ RIGT_HAND ]) && (y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
                 strcpy(checkedPose_print, "KAIDAN");
                 //checkedPose = OBAKE;
                 ehonnImage = cv::imread("./kaidan.jpg");
                 imshow("Ehon", ehonnImage);
             }
 
-            else if ((y3[ HEAD_HEAD ] < y3[ LEFT_HAND ]) && (y3[ HEAD_HEAD ] < y3[ RIGT_HAND ])) {
+            /** Check Bruna **/
+            if ((y3[ HEAD_HEAD ] < y3[ LEFT_HAND ]) && (y3[ HEAD_HEAD ] < y3[ RIGT_HAND ])) {
                 strcpy(checkedPose_print, "BRUNA");
                 ehonnImage = cv::imread("./bruna.jpg");
                 imshow("Ehon", ehonnImage);
             }
 
-            else {
+            /** Check King **/
+            if ((y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
+
+                double theta_left_elbow1 = to_deg( atan2( (y3[ LEFT_SHOULDER - LEFT_ELBOW ]), (x3[ LEFT_SHOULDER - LEFT_ELBOW ]) ) );    //atan( shor-el ) to degree
+                double theta_left_elbow2 = to_deg( atan2( (y3[ LEFT_ELBOW - LEFT_HAND ]), (x3[ LEFT_HAND - LEFT_ELBOW ]) ) );   //atan( el-han ), atan( han-el ) to degree
+                double theta_left = fabs(theta_left_elbow1) + fabs(theta_left_elbow2);
+
+                double theta_rigt_elbow1 = to_deg( atan2( (y3[ RIGT_SHOULDER - RIGT_ELBOW ]), (x3[ RIGT_SHOULDER - RIGT_ELBOW ]) ) );   //atan( shor-el ) to degree
+                double theta_rigt_elbow2 = to_deg( atan2( (y3[ RIGT_ELBOW - RIGT_HAND ]), (x3[ RIGT_HAND - RIGT_ELBOW ]) ) );   //atan( el-han ), atan( han-el ) to degree
+                double theta_rigt = fabs(theta_rigt_elbow1) + fabs(theta_rigt_elbow2);
+
+                std::cout << theta_left << "\t\t" << theta_rigt << '\n';
+            }
+
+            /** Check NONE **/
+            if(checkedPose_print == "NONE") {
                 cv::destroyWindow("Ehon");
             }
             
