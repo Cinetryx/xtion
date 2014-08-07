@@ -222,6 +222,13 @@ class NiteApp
                 ehonnImage = cv::imread("./kaidan.jpg");
                 imshow("Ehon", ehonnImage);
             }
+
+            else if ((y3[ HEAD_HEAD ] < y3[ LEFT_HAND ]) && (y3[ HEAD_HEAD ] < y3[ RIGT_HAND ])) {
+                strcpy(checkedPose_print, "BRUNA");
+                ehonnImage = cv::imread("./bruna.jpg");
+                imshow("Ehon", ehonnImage);
+            }
+
             else {
                 cv::destroyWindow("Ehon");
             }
