@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <string.h>
 #include <stdexcept>
 #include <OpenNI.h>
 #include <NiTE.h>
@@ -247,7 +248,7 @@ class NiteApp
             }
 
             /** Check NONE **/
-            if(checkedPose_print == "NONE") {
+            if( strcmp(checkedPose_print, "NONE") == 0 ) {
                 cv::destroyWindow("Ehon");
             }
             
