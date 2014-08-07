@@ -212,7 +212,7 @@ class NiteApp
 
                 if ( theta_diff < accidental_deg ) {
                     strcpy(checkedPose_print, "MAJOKO");
-                    //checkedPose = MOUNTAIN;
+                    checkedPose = MAJOKO;
                     ehonnImage = cv::imread("./majoko.jpg");
                     imshow("Ehon", ehonnImage);
                 }
@@ -221,7 +221,7 @@ class NiteApp
             /** Check Kaidan Restaurant **/
             if ((y3[ TORSO_TORSO ] < y3[ LEFT_HAND ]) && (y3[ TORSO_TORSO ] < y3[ RIGT_HAND ]) && (y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
                 strcpy(checkedPose_print, "KAIDAN");
-                //checkedPose = OBAKE;
+                checkedPose = KAIDAN;
                 ehonnImage = cv::imread("./kaidan.jpg");
                 imshow("Ehon", ehonnImage);
             }
@@ -229,6 +229,7 @@ class NiteApp
             /** Check Bruna **/
             if ((y3[ HEAD_HEAD ] < y3[ LEFT_HAND ]) && (y3[ HEAD_HEAD ] < y3[ RIGT_HAND ])) {
                 strcpy(checkedPose_print, "BRUNA");
+                checkedPose = BRUNA;
                 ehonnImage = cv::imread("./bruna.jpg");
                 imshow("Ehon", ehonnImage);
             }
@@ -236,6 +237,7 @@ class NiteApp
             /** Check Neko Nezumi **/
             if ((y3[ LEFT_HAND ] > y3[ LEFT_SHOULDER ]) && (y3[ RIGT_HAND ] < y3[ RIGT_SHOULDER ])) {
                 strcpy(checkedPose_print, "NEKO");
+                checkedPose = NEKO;
                 ehonnImage = cv::imread("./neko.jpg");
                 imshow("Ehon", ehonnImage);
             }
