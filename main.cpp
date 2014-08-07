@@ -234,7 +234,7 @@ class NiteApp
             }
 
             /** Check King **/
-            if ((y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
+            /*if ((y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
 
                 double theta_left_elbow1 = to_deg( atan2( (y3[ LEFT_SHOULDER - LEFT_ELBOW ]), (x3[ LEFT_SHOULDER - LEFT_ELBOW ]) ) );    //atan( shor-el ) to degree
                 double theta_left_elbow2 = to_deg( atan2( (y3[ LEFT_ELBOW - LEFT_HAND ]), (x3[ LEFT_HAND - LEFT_ELBOW ]) ) );   //atan( el-han ), atan( han-el ) to degree
@@ -245,7 +245,7 @@ class NiteApp
                 double theta_rigt = fabs(theta_rigt_elbow1) + fabs(theta_rigt_elbow2);
 
                 std::cout << theta_left << "\t\t" << theta_rigt << '\n';
-            }
+            }*/
 
             /** Check NONE **/
             if( strcmp(checkedPose_print, "NONE") == 0 ) {
