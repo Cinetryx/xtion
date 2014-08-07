@@ -155,22 +155,6 @@ class NiteApp
             char joint_name[15][15] = {"HEAD_HEAD", "NECK_NECK", "LEFT_SHOULDER", "RIGT_SHOULDER", "LEFT_ELBOW", "RIGT_ELBOW", "LEFT_HAND", "RIGT_HAND",
                                        "TORSO_TORSO", "LEFT_HIP", "RIGT_HIP", "LEFT_KNEE", "RIGT_KNEE", "LEFT_FOOT", "RIGT_FOOT"};
 
-            int HEAD_HEAD = 0;
-            int NECK_NECK = 1;
-            int LEFT_SHOULDER = 2;
-            int RIGT_SHOULDER = 3;
-            int LEFT_ELBOW = 4;
-            int RIGT_ELBOW = 5;
-            int LEFT_HAND = 6;
-            int RIGT_HAND = 7;
-            int TORSO_TORSO = 8;
-            int LEFT_HIP = 9;
-            int RIGT_HIP = 10;
-            int LEFT_KNEE = 11;
-            int RIGT_KNEE = 12;
-            int LEFT_FOOT = 13;
-            int RIGT_FOOT = 14;
-            
             for (int j = 0; j <= 14; ++j) {
                 const nite::SkeletonJoint& joint = skeelton.getJoint((nite::JointType)j);
                 if (joint.getPositionConfidence() < 0.7f) {
@@ -199,6 +183,22 @@ class NiteApp
             char checkedPose_print[15] = "NONE";
             Pose checkedPose = NONE;
             std::stringstream ss;
+
+            int HEAD_HEAD = 0;
+            int NECK_NECK = 1;
+            int LEFT_SHOULDER = 2;
+            int RIGT_SHOULDER = 3;
+            int LEFT_ELBOW = 4;
+            int RIGT_ELBOW = 5;
+            int LEFT_HAND = 6;
+            int RIGT_HAND = 7;
+            int TORSO_TORSO = 8;
+            int LEFT_HIP = 9;
+            int RIGT_HIP = 10;
+            int LEFT_KNEE = 11;
+            int RIGT_KNEE = 12;
+            int LEFT_FOOT = 13;
+            int RIGT_FOOT = 14;
 
             if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {   // Check Majoko
                 double theta_shordar_elbow = to_deg( atan2( (y3[ RIGT_ELBOW ] - y3[ RIGT_SHOULDER ]), (x3[ RIGT_ELBOW ] - x3[ RIGT_SHOULDER ]) ) );    // atan( shor-el ) to degree
