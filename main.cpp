@@ -174,8 +174,8 @@ class NiteApp
                 // std::cout << joint_name[j] << "\t\tX:" << (int)x3[j] << "\t\tY:" << (int)y3[j] << "\t\tZ:" << (int)z3[j]<< '\n';
             }
 
-            const Pose checkedPose_buff = checkPose(x3, y3, z3, depthImage);
-            const int checkedPose_buff_count = 0;
+            static Pose checkedPose_buff = checkPose(x3, y3, z3, depthImage);
+            static int checkedPose_buff_count = 0;
 
             Pose checkedPose = checkPose(x3, y3, z3, depthImage);
 
