@@ -154,6 +154,22 @@ class NiteApp
             float x3[15], y3[15], z3[15];
             char joint_name[15][15] = {"HEAD_HEAD", "NECK_NECK", "LEFT_SHOULDER", "RIGT_SHOULDER", "LEFT_ELBOW", "RIGT_ELBOW", "LEFT_HAND", "RIGT_HAND",
                                        "TORSO_TORSO", "LEFT_HIP", "RIGT_HIP", "LEFT_KNEE", "RIGT_KNEE", "LEFT_FOOT", "RIGT_FOOT"};
+
+            int HEAD_HEAD = 0;
+            int NECK_NECK = 1;
+            int LEFT_SHOULDER = 2;
+            int RIGT_SHOULDER = 3;
+            int LEFT_ELBOW = 4;
+            int RIGT_ELBOW = 5;
+            int LEFT_HAND = 6;
+            int RIGT_HAND = 7;
+            int TORSO_TORSO = 8;
+            int LEFT_HIP = 9;
+            int RIGT_HIP = 10;
+            int LEFT_KNEE = 11;
+            int RIGT_KNEE = 12;
+            int LEFT_FOOT = 13;
+            int RIGT_FOOT = 14;
             
             for (int j = 0; j <= 14; ++j) {
                 const nite::SkeletonJoint& joint = skeelton.getJoint((nite::JointType)j);
@@ -189,6 +205,7 @@ class NiteApp
                 double theta_elbow_hand = to_deg( atan2( y3[7] - y3[5], x3[7] - x3[5] ) );       // atan( el-han ) to degree
                 double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
                 std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
+
                 if ( theta_diff < 20 ) {
                     strcpy(checkedPose_print, "MAJOKO");
                     //checkedPose = MOUNTAIN;
