@@ -192,6 +192,7 @@ class NiteApp
                 checkedPose_buff_count = 0;
             }
             if (checkedPose_buff_count > 100) {
+                checkedPose_buff_count = 0;
                 return 1;
             }
 
