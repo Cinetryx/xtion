@@ -200,9 +200,9 @@ class NiteApp
             Pose checkedPose = NONE;
             std::stringstream ss;
 
-            if (y3[0] > y3[6] && y3[0] < y3[7]) {   // Check Majoko
-                double theta_shordar_elbow = to_deg( atan2( (y3[5] - y3[3]), (x3[5] - x3[3]) ) );    // atan( shor-el ) to degree
-                double theta_elbow_hand = to_deg( atan2( y3[7] - y3[5], x3[7] - x3[5] ) );       // atan( el-han ) to degree
+            if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {   // Check Majoko
+                double theta_shordar_elbow = to_deg( atan2( (y3[ RIGT_ELBOW ] - y3[ RIGT_SHOULDER ]), (x3[ RIGT_ELBOW ] - x3[ RIGT_SHOULDER ]) ) );    // atan( shor-el ) to degree
+                double theta_elbow_hand = to_deg( atan2( y3[ RIGT_HAND ] - y3[ RIGT_ELBOW ], x3[ RIGT_HAND ] - x3[ RIGT_ELBOW ] ) );       // atan( el-han ) to degree
                 double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
                 std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
 
