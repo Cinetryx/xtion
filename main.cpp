@@ -41,7 +41,7 @@ class NiteApp
         }
 
 
-        void update()
+        int update()
         {
             openni::VideoFrameRef colorFrame;
             nite::UserTrackerFrameRef userFrame;
@@ -54,6 +54,8 @@ class NiteApp
 
             const nite::Array<nite::UserData>& users = userFrame.getUsers();
 
+            int return_num = 0;
+
             for (int i = 0; i < users.getSize(); ++i) {
                 const nite::UserData& user = users[i];
 
@@ -61,12 +63,15 @@ class NiteApp
                     userTracker.startSkeletonTracking(user.getId());
                 }
                 else if (!user.isLost()) {
-                    showSkeleton(depthImage, userTracker, user);
+                    return_num = showSkeleton(depthImage, userTracker, user);
                 }
             }
 
             cv::imshow("Skeleton", depthImage);
             cv::imshow("ColorStream", colorImage);
+
+            return return_num;
+
         }
 
 
@@ -144,7 +149,7 @@ class NiteApp
         }
 
 
-        void showSkeleton(cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user)
+        int showSkeleton(cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user)
         {
             const nite::Skeleton& skeelton = user.getSkeleton();
             if (skeelton.getState() != nite::SKELETON_TRACKED) {
@@ -186,6 +191,11 @@ class NiteApp
                 checkedPose_buff = checkedPose;
                 checkedPose_buff_count = 0;
             }
+            if (checkedPose_buff_count > 100) {
+                return 1;
+            }
+
+            return 0;
 
         }
 
@@ -294,6 +304,11 @@ class NiteApp
 
 
 
+void action()
+{
+    std::cout << "GO\n";
+}
+
 
 int main(int argc, const char * argv[])
 {
@@ -305,7 +320,17 @@ int main(int argc, const char * argv[])
         app.initialize();
 
         while (true) {
-            app.update();
+
+            int action = app.update();
+            if (action) {
+                action();
+                while (true) {
+                    int key = cv::waitKey(10);
+                    if (key == 'g') {
+                        break;
+                    }
+                }
+            }
 
             int key = cv::waitKey(10);
             if (key == 'q') {
