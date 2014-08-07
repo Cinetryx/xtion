@@ -304,7 +304,7 @@ class NiteApp
 
 
 
-void action()
+void UDP()
 {
     std::cout << "GO\n";
 }
@@ -323,7 +323,7 @@ int main(int argc, const char * argv[])
 
             int action = app.update();
             if (action) {
-                action();
+                UDP();
                 while (true) {
                     int key = cv::waitKey(10);
                     if (key == 'g') {
