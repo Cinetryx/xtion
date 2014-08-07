@@ -10,6 +10,9 @@
 #include <iostream>
 #include <string.h>
 #include <stdexcept>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <OpenNI.h>
 #include <NiTE.h>
 #include <opencv2/opencv.hpp>
@@ -308,6 +311,19 @@ class NiteApp
 void UDP()
 {
     std::cout << "GO\n";
+
+    int sock;
+    struct sockaddr_in addr;
+
+    sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(4000);
+    addr.sin_addr.s_addr = inet_addr("172.16.14.200");
+
+    sendto(sock, "GO", 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+
+    close(sock);
 }
 
 
