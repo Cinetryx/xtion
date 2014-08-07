@@ -233,6 +233,13 @@ class NiteApp
                 imshow("Ehon", ehonnImage);
             }
 
+            /** Check Neko Nezumi **/
+            if ((y3[ LEFT_HAND ] < y3[ LEFT_SHOULDER ]) && (y3[ RIGT_HAND ] > y3[ RIGT_SHOULDER ])) {
+                strcpy(checkedPose_print, "NEKO");
+                ehonnImage = cv::imread("./neko.jpg");
+                imshow("Ehon", ehonnImage);
+            }
+
             /** Check King **/
             /*if ((y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {
 
