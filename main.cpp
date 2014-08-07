@@ -181,6 +181,7 @@ class NiteApp
         Pose checkPose(float *x3, float *y3, float *z3, cv::Mat& depthImage)
         {
             char checkedPose_print[15] = "NONE";
+            int accidental_deg = 20;
             Pose checkedPose = NONE;
             std::stringstream ss;
 
@@ -200,20 +201,22 @@ class NiteApp
             int LEFT_FOOT = 13;
             int RIGT_FOOT = 14;
 
-            if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {   // Check Majoko
+            if (y3[ HEAD_HEAD ] > y3[ LEFT_HAND ] && y3[ HEAD_HEAD ] < y3[ RIGT_HAND ]) {   /** Check Majoko **/
+
                 double theta_shordar_elbow = to_deg( atan2( (y3[ RIGT_ELBOW ] - y3[ RIGT_SHOULDER ]), (x3[ RIGT_ELBOW ] - x3[ RIGT_SHOULDER ]) ) );    // atan( shor-el ) to degree
                 double theta_elbow_hand = to_deg( atan2( y3[ RIGT_HAND ] - y3[ RIGT_ELBOW ], x3[ RIGT_HAND ] - x3[ RIGT_ELBOW ] ) );       // atan( el-han ) to degree
                 double theta_diff = fabs( theta_shordar_elbow - theta_elbow_hand );             // difference
                 std::cout << theta_shordar_elbow << "\t\t" << theta_elbow_hand << "\t\t" << theta_diff << '\n';
 
-                if ( theta_diff < 20 ) {
+                if ( theta_diff < accidental_deg ) {
                     strcpy(checkedPose_print, "MAJOKO");
                     //checkedPose = MOUNTAIN;
                     ehonnImage = cv::imread("./majoko.jpg");
                     imshow("Ehon", ehonnImage);
                 }
             }
-            else if ((y3[8] < y3[6]) && (y3[8] < y3[7]) && (y3[2] > y3[6]) && (y3[3] > y3[7])) {    // Check Kaidann Resutoran
+
+            else if ((y3[ TORSO_TORSO ] < y3[ LEFT_HAND ]) && (y3[ TORSO_TORSO ] < y3[ RIGT_HAND ]) && (y3[ LEFT_SHOULDER ] > y3[ LEFT_HAND ]) && (y3[ RIGT_SHOULDER ] > y3[ RIGT_HAND ])) {    /** Check Kaidann Resutoran **/
                 strcpy(checkedPose_print, "KAIDAN");
                 //checkedPose = OBAKE;
                 ehonnImage = cv::imread("./kaidan.jpg");
