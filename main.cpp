@@ -16,7 +16,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
-enum Pose {NONE, OUT, MOUNTAIN, RIVER, OBAKE};
+enum Pose {NONE, MAJOKO, KAIDAN, BRUNA, NEKO, KING};
 
 
 class NiteApp
