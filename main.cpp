@@ -153,7 +153,7 @@ class NiteApp
         {
             const nite::Skeleton& skeelton = user.getSkeleton();
             if (skeelton.getState() != nite::SKELETON_TRACKED) {
-                return;
+                return 0;
             }
 
             float x, y;
