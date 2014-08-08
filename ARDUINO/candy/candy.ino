@@ -13,6 +13,7 @@ void setup() {
     Serial.begin( 9600 );
     Ethernet.begin( mac, ip );
     Udp.begin( localPort );
+    pinMode(12, OUTPUT);
 }
 
 int get_command() {
@@ -30,6 +31,9 @@ int get_command() {
 
 void action() {
     Serial.println("ACTION");
+    digitalWrite(12, HIGH);
+    delay(1000);
+    digitalWrite(12, LOW);
 }
 
 void loop() {
