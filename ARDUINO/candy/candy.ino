@@ -19,7 +19,7 @@ int get_command() {
     if( Udp.parsePacket() ) {
         Udp.read( packetBuffer, UDP_TX_PACKET_MAX_SIZE );
 
-        if( packetBuffer == "GO" ) {
+        if( packetBuffer[0] == 'G' ) {
             return 1;
         }
         else {
