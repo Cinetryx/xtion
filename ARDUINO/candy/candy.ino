@@ -32,7 +32,7 @@ int get_command() {
 void action() {
     Serial.println("ACTION");
     digitalWrite(12, HIGH);
-    delay(1000);
+    delay(2000);
     digitalWrite(12, LOW);
 }
 
