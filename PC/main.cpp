@@ -322,7 +322,7 @@ void UDP()
     addr.sin_port = htons(4000);
     addr.sin_addr.s_addr = inet_addr("172.16.14.200");
 
-    sendto(sock, "GO", 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+    sendto(sock, "A", 5, 0, (struct sockaddr *)&addr, sizeof(addr));
 
     close(sock);
 }

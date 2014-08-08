@@ -19,7 +19,7 @@ int get_command() {
     if( Udp.parsePacket() ) {
         Udp.read( packetBuffer, UDP_TX_PACKET_MAX_SIZE );
 
-        if( packetBuffer[0] == 'G' ) {
+        if( packetBuffer[0] == 'A' ) {
             return 1;
         }
         else {
@@ -29,7 +29,7 @@ int get_command() {
 }
 
 void action() {
-    Serial.println("GO");
+    Serial.println("ACTION");
 }
 
 void loop() {
