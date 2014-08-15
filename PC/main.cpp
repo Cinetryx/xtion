@@ -39,6 +39,8 @@ class Xtion
         nite::UserId checkFrontUser( const nite::Array<nite::UserData>& users );
         void drawBox( const nite::UserData& user, int flag );
         void changeResolution( openni::VideoStream& stream );
+        void trackingUser( const nite::UserData& user );
+        void showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user );
 
 
     private:
@@ -81,7 +83,7 @@ void Xtion::update()
 }
 
 
-/*---- Convert OpenNI format to OpenCv format ----*/
+/*---- Convert OpenNI format to OpenCV format ----*/
 cv::Mat Xtion::convColorStream( openni::VideoFrameRef& colorFrame )
 {
     colorImage = cv::Mat( colorFrame.getHeight(),
@@ -98,20 +100,33 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 {
     const nite::Array<nite::UserData>& users = userFrame.getUsers();
 
-    nite::UserId frontUserId = checkFrontUser( users );
-
+    nite::UserId frontUserId = checkFrontUser( users );     // Get front user
     debugImage = colorImage;
+
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
         nite::UserId userId = user.getId();
         if ( userId == frontUserId ) {
-            drawBox( user, 1 );
+            drawBox( user, 1 );     // Draw box of front user
+            trackingUser( user );   // Tracking front user
         }
         else {
-            drawBox( user, 0 );
+            drawBox( user, 0 );     // Draw box of other user
         }
     }
     return debugImage;
+}
+
+
+/*---- Tracking Front User ----*/
+void Xtion::trackingUser( const nite::UserData& user )
+{
+    if ( user.isNew() ) {
+        userTracker.startSkeletonTracking( user.getId() );
+    }
+    else if ( !user.isLost() ) {
+        showSkeleton( depthImage, userTracker, user );
+    }
 }
 
 
@@ -140,12 +155,12 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
             }
         }
     }
-    for ( int i = 0; i < users.getSize(); ++i ) {
+    for ( int i = 0; i < users.getSize(); ++i ) {       // #=# DEBUGSTART #=#
         std::cout << distanceUserId[i] << '\t';
     }
-    std::cout << "\t\t\t" << distanceUserId[0] << '\n';
+    std::cout << "\t\t\tFrontUser: " << distanceUserId[0] << '\n';
 
-    static int debug = 0;       // #=# DEBUGSTART #=#
+    static int debug = 0;
     if ( debug == 20 ) {
         std::cout << "Check\n";
         debug = 0;
@@ -172,8 +187,8 @@ void Xtion::drawBox( const nite::UserData& user, int flag )
 
     cv::Scalar color( 0, 255, 0 );
     if ( flag ) {
-        //color = cv::Scalar( 255, 255, 0 );
-        color = cv::Scalar( 0, 0, 255 );
+        color = cv::Scalar( 255, 255, 0 );
+        //color = cv::Scalar( 0, 0, 255 );
     }
 
     cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
@@ -190,6 +205,27 @@ void Xtion::changeResolution( openni::VideoStream& stream )     // Don't have to
     mode.setResolution( 320, 240 );
     mode.setFps( 30 );
     stream.setVideoMode( mode );
+}
+
+
+/*---- Show User Skeleton ----*/
+void Xtion::showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user )
+{
+    const nite::Skeleton& skeelton = user.getSkeleton();
+    if ( skeelton.getState() != nite::SKELETON_TRACKED ) {
+        return;
+    }
+
+    for ( int j = 0; j <= 14; ++j ) {
+        const nite::SkeletonJoint& joint = skeelton.getJoint( (nite::JointType)j );
+        if ( joint.getPositionConfidence() < 0.7f ) {
+            continue;
+        }
+        const nite::Point3f& position = joint.getPosition();
+        float x = 0, y = 0;
+        userTracker.convertJointCoordinatesToDepth( position.x, position.y, position.z, &x, &y );
+        cv::circle( debugImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 0, 255 ), -1 );
+    }
 }
 
 
