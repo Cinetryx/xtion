@@ -38,6 +38,7 @@ class Xtion
         cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
         nite::UserId checkFrontUser( const nite::Array<nite::UserData>& users );
         void drawBox( const nite::UserData& user );
+        void changeResolution( openni::VideoStream& stream );
 
 
     private:
@@ -55,6 +56,7 @@ Xtion::Xtion()
 {
     openni::Status ret = device.open( openni::ANY_DEVICE );
     colorStream.create( device, openni::SENSOR_COLOR );
+    changeResolution( colorStream );
     colorStream.start();
 
     userTracker.create();
@@ -101,6 +103,7 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
         drawBox( user );
     }
     nite::UserId frontUserId = checkFrontUser( users );
+    std::cout << "FrontUserId " << frontUserId << '\n';
     return debugImage;
 }
 
@@ -110,6 +113,7 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 {
     float distanceUser[ users.getSize() ];
     nite::UserId distanceUserId[ users.getSize() ];
+    distanceUserId[0] = 0;  // Initialize
 
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
@@ -145,10 +149,20 @@ void Xtion::drawBox( const nite::UserData& user )
     float LLx = box.min.x, LLy = box.min.y;     // Left Low
     cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
 
-    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0) );  // LOW
-    cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0) );  // HIGH
-    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0) );  // LEFT
-    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0) );  // RIGHT
+    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0), 3 );  // LOW
+    cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0), 3 );  // HIGH
+    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0), 3 );  // LEFT
+    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0), 3 );  // RIGHT
+}
+
+
+/*---- Change Resolution ----*/
+void Xtion::changeResolution( openni::VideoStream& stream )     // Don't have to
+{
+    openni::VideoMode mode = stream.getVideoMode();
+    mode.setResolution( 320, 240 );
+    mode.setFps( 30 );
+    stream.setVideoMode( mode );
 }
 
 
@@ -159,6 +173,9 @@ cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #
         cv::Scalar( 1, 0, 0 ),
         cv::Scalar( 0, 1, 0 ),
         cv::Scalar( 0, 0, 1 ),
+        cv::Scalar( 0, 1, 1 ),
+        cv::Scalar( 1, 1, 0 ),
+        cv::Scalar( 1, 0, 1 ),
     };
 
     openni::VideoFrameRef depthFrame = userFrame.getDepthFrame();
@@ -173,9 +190,9 @@ cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #
             int index = i * 4;
             uchar* data = &depthImage.data[index];
             if ( pLabels[i] != 0 ) {
-                data[0] *= colors[0][0];
-                data[1] *= colors[0][1];
-                data[2] *= colors[0][2];
+                data[0] *= colors[pLabels[i]][0];
+                data[1] *= colors[pLabels[i]][1];
+                data[2] *= colors[pLabels[i]][2];
             }
             else {
                 int gray = ~( ( depth[i] * 255 ) / 10000 );
