@@ -36,7 +36,8 @@ class Xtion
         cv::Mat convColorStream( openni::VideoFrameRef& colorFrame );
         cv::Mat makeDebugStream( nite::UserTrackerFrameRef& userFrame );
         cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
-        void drawBox( const nite::BoundingBox& box );
+        void drawBox( const nite::UserData& user );
+
     private:
         openni::Device device;  // Using device
         openni::VideoStream colorStream;
@@ -62,17 +63,18 @@ Xtion::Xtion()
 /*---- Update frame ----*/
 void Xtion::update()
 {
-    openni::VideoFrameRef colorFrame;       // will in a ColorStream ( colorFrame )
-    colorStream.readFrame( &colorFrame );   // Read Frame
+    openni::VideoFrameRef colorFrame;               // will in a ColorStream ( colorFrame )
+    colorStream.readFrame( &colorFrame );           // Read Frame
     colorImage = convColorStream( colorFrame );     // Convert colorStream
 
-    nite::UserTrackerFrameRef userFrame;    // Will in a DebugStream ( userFrame )
-    userTracker.readFrame( &userFrame );    // Read Frame
-    debugImage = makeDebugStream( userFrame );     // Make debugStream
+    nite::UserTrackerFrameRef userFrame;            // Will in a DebugStream ( userFrame )
+    userTracker.readFrame( &userFrame );            // Read Frame
+    debugImage = makeDebugStream( userFrame );      // Make debugStream
+
     depthImage = showUsersStream( userFrame );      // #=# DEBUG #=#
+    cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 
     cv::imshow( "Debug Frame", debugImage );
-    cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 }
 
 
@@ -96,16 +98,17 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
     for ( int i = 0; i < users.getSize(); ++i ) {
         std::cout << i << '\t';
         const nite::UserData& user = users[i];
-        const nite::BoundingBox& box = user.getBoundingBox();
-        drawBox( box );
+        drawBox( user );
     }
     return debugImage;
 }
 
 
 /*---- Draw Bounding Box ----*/
-void Xtion::drawBox( const nite::BoundingBox& box )
+void Xtion::drawBox( const nite::UserData& user )
 {
+        const nite::BoundingBox& box = user.getBoundingBox();
+
         float RHx = box.max.x, RHy = box.max.y;     // Right High
         cv::Point RIGT_HIGH = cvPoint( (int)RHx, (int)RHy );
         float RLx = box.max.x, RLy = box.min.y;     // Right Low
