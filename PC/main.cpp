@@ -35,7 +35,7 @@ class Xtion
     private:
         cv::Mat convColorStream( openni::VideoFrameRef& colorFrame );
         cv::Mat makeDebugStream( nite::UserTrackerFrameRef& userFrame );
-        cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );
+        cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
         void drawBox( const nite::BoundingBox& box );
     private:
         openni::Device device;  // Using device
@@ -43,7 +43,7 @@ class Xtion
         nite::UserTracker userTracker;
         cv::Mat colorImage;     // ColorStream image ( colorImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
-        cv::Mat depthImage;     // Depth Print image ( depthImage )
+        cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
 };
 
 
@@ -69,10 +69,10 @@ void Xtion::update()
     nite::UserTrackerFrameRef userFrame;    // Will in a DebugStream ( userFrame )
     userTracker.readFrame( &userFrame );    // Read Frame
     debugImage = makeDebugStream( userFrame );     // Make debugStream
-    depthImage = showUsersStream( userFrame );
+    depthImage = showUsersStream( userFrame );      // #=# DEBUG #=#
 
     cv::imshow( "Debug Frame", debugImage );
-    cv::imshow( "Depth Frame", depthImage );
+    cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 }
 
 
@@ -125,7 +125,7 @@ void Xtion::drawBox( const nite::BoundingBox& box )
 
 
 /*---- Show Users on Depth ----*/
-cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )
+cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #=# DEBUG #=#
 {
     static const cv::Scalar colors[] = {
         cv::Scalar( 1, 0, 0 ),
@@ -165,9 +165,12 @@ cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )
 int main()
 {
     try {
+        std::cout << "ChePo 1\n";   // #=# DEBUG #=#
         openni::OpenNI::initialize();
         nite::NiTE::initialize();
+        std::cout << "ChePo 2\n";   // #=# DEUBG #=#
         Xtion app;
+        std::cout << "ChePo 3\n";   // #=# DEBUG #=#
         
         while (true) {
             app.update();
