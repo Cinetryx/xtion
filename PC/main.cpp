@@ -103,17 +103,19 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 }
 
 
-/*---- Draw User Box ----*/
+/*---- Draw Bounding Box ----*/
 void Xtion::drawBox( const nite::BoundingBox& box )
 {
-        float RHx = 0, RHy = 0;     // Right High
+        float RHx = box.max.x, RHy = box.max.y;     // Right High
         cv::Point RIGT_HIGH = cvPoint( (int)RHx, (int)RHy );
         float RLx = 0, RLy = 0;     // Right Low
         cv::Point RIGT_LOW = cvPoint( (int)RLx, (int)RLy );
-        float LHx = 0, LHy = 0;     // Left High
+        float LHx = box.min.x, LHy = box.max.y;     // Left High
+        cv::Point LEFT_HIGH = cvPoint( (int)LHx, (int)LHy );
         float LLx = 0, LLy = 0;     // Left Low
+        cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
 
-        cv::line( debugImage, RIGT_HIGH, RIGT_LOW, cv::Scalar(0,0,255) );
+        cv::line( debugImage, RIGT_HIGH, LEFT_HIGH, cv::Scalar(0,0,255) );
         std::cout << '\n';
 }
 
