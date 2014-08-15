@@ -37,7 +37,7 @@ class Xtion
         cv::Mat makeDebugStream( nite::UserTrackerFrameRef& userFrame );
         cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
         nite::UserId checkFrontUser( const nite::Array<nite::UserData>& users );
-        void drawBox( const nite::UserData& user );
+        void drawBox( const nite::UserData& user, int flag );
         void changeResolution( openni::VideoStream& stream );
 
 
@@ -97,13 +97,17 @@ cv::Mat Xtion::convColorStream( openni::VideoFrameRef& colorFrame )
 cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 {
     const nite::Array<nite::UserData>& users = userFrame.getUsers();
+    nite::UserId frontUserId = checkFrontUser( users );
+
+    nite::UserId flagUserType[20] = {};
+    flagUserType[ frontUserId-1 ] = 1;
+    std::cout << frontUserId << '\n';
+
     debugImage = colorImage;
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
-        drawBox( user );
+        drawBox( user, flagUserType[i] );
     }
-    nite::UserId frontUserId = checkFrontUser( users );
-    std::cout << "FrontUserId " << frontUserId << '\n';
     return debugImage;
 }
 
@@ -136,7 +140,7 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 
 
 /*---- Draw Bounding Box ----*/
-void Xtion::drawBox( const nite::UserData& user )
+void Xtion::drawBox( const nite::UserData& user, int flag )
 {
     const nite::BoundingBox& box = user.getBoundingBox();
 
@@ -149,10 +153,15 @@ void Xtion::drawBox( const nite::UserData& user )
     float LLx = box.min.x, LLy = box.min.y;     // Left Low
     cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
 
-    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0), 3 );  // LOW
-    cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0), 3 );  // HIGH
-    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0), 3 );  // LEFT
-    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0), 3 );  // RIGHT
+    cv::Scalar color( 0, 255, 0 );
+    if ( flag ) {
+        color = cv::Scalar( 255, 255, 0 );
+    }
+
+    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
+    cv::line( debugImage, LEFT_LOW , RIGT_LOW , color, 3 );  // HIGH
+    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , color, 3 );  // LEFT
+    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , color, 3 );  // RIGHT
 }
 
 
