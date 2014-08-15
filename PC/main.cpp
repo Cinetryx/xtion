@@ -97,16 +97,19 @@ cv::Mat Xtion::convColorStream( openni::VideoFrameRef& colorFrame )
 cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 {
     const nite::Array<nite::UserData>& users = userFrame.getUsers();
-    nite::UserId frontUserId = checkFrontUser( users );
 
-    nite::UserId flagUserType[20] = {};
-    flagUserType[ frontUserId-1 ] = 1;
-    std::cout << frontUserId << '\n';
+    nite::UserId frontUserId = checkFrontUser( users );
 
     debugImage = colorImage;
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
-        drawBox( user, flagUserType[i] );
+        nite::UserId userId = user.getId();
+        if ( userId == frontUserId ) {
+            drawBox( user, 1 );
+        }
+        else {
+            drawBox( user, 0 );
+        }
     }
     return debugImage;
 }
@@ -115,8 +118,8 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 /*---- Check Front User ----*/
 nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 {
-    float distanceUser[ users.getSize() ];
-    nite::UserId distanceUserId[ users.getSize() ];
+    float distanceUser[ 20 ];
+    nite::UserId distanceUserId[ 20 ];
     distanceUserId[0] = 0;  // Initialize
 
     for ( int i = 0; i < users.getSize(); ++i ) {
@@ -124,17 +127,31 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
         distanceUser[i] = user.getCenterOfMass().z;
         distanceUserId[i] = user.getId();
     }
-    for ( int i = 1; i < users.getSize(); ++i ) {
-        if ( distanceUser[0] > distanceUser[i] ) {
-            float temp = distanceUser[0];
-            distanceUser[0] = distanceUser[i];
-            distanceUser[i] = temp;
+    for ( int i = 0; i < users.getSize(); ++i ) {
+        for ( int j = i + 1; j < users.getSize(); ++j ) {
+            if ( distanceUser[i] > distanceUser[j] ) {
+                float temp = distanceUser[i];
+                distanceUser[i] = distanceUser[j];
+                distanceUser[j] = temp;
 
-            nite::UserId temp_Id = distanceUserId[0];
-            distanceUserId[0] = distanceUserId[i];
-            distanceUserId[i] = temp_Id;
+                nite::UserId temp_Id = distanceUserId[i];
+                distanceUserId[i] = distanceUserId[j];
+                distanceUserId[j] = temp_Id;
+            }
         }
     }
+    for ( int i = 0; i < users.getSize(); ++i ) {
+        std::cout << distanceUserId[i] << '\t';
+    }
+    std::cout << "\t\t\t" << distanceUserId[0] << '\n';
+
+    static int debug = 0;       // #=# DEBUGSTART #=#
+    if ( debug == 20 ) {
+        std::cout << "Check\n";
+        debug = 0;
+    }
+    debug++;                    // #=# DEBUGEND #=#
+
     return distanceUserId[0];
 }
 
@@ -155,7 +172,8 @@ void Xtion::drawBox( const nite::UserData& user, int flag )
 
     cv::Scalar color( 0, 255, 0 );
     if ( flag ) {
-        color = cv::Scalar( 255, 255, 0 );
+        //color = cv::Scalar( 255, 255, 0 );
+        color = cv::Scalar( 0, 0, 255 );
     }
 
     cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
