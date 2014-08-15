@@ -108,14 +108,18 @@ void Xtion::drawBox( const nite::BoundingBox& box )
 {
         float RHx = box.max.x, RHy = box.max.y;     // Right High
         cv::Point RIGT_HIGH = cvPoint( (int)RHx, (int)RHy );
-        float RLx = 0, RLy = 0;     // Right Low
+        float RLx = box.max.x, RLy = box.min.y;     // Right Low
         cv::Point RIGT_LOW = cvPoint( (int)RLx, (int)RLy );
         float LHx = box.min.x, LHy = box.max.y;     // Left High
         cv::Point LEFT_HIGH = cvPoint( (int)LHx, (int)LHy );
-        float LLx = 0, LLy = 0;     // Left Low
+        float LLx = box.min.x, LLy = box.min.y;     // Left Low
         cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
 
-        cv::line( debugImage, RIGT_HIGH, LEFT_HIGH, cv::Scalar(0,0,255) );
+        cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0) );  // LOW
+        cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0) );  // HIGH
+        cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0) );  // LEFT
+        cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0) );  // RIGHT
+
         std::cout << '\n';
 }
 
