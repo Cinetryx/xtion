@@ -36,7 +36,9 @@ class Xtion
         cv::Mat convColorStream( openni::VideoFrameRef& colorFrame );
         cv::Mat makeDebugStream( nite::UserTrackerFrameRef& userFrame );
         cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
+        nite::UserId checkFrontUser( const nite::Array<nite::UserData>& users );
         void drawBox( const nite::UserData& user );
+
 
     private:
         openni::Device device;  // Using device
@@ -56,7 +58,6 @@ Xtion::Xtion()
     colorStream.start();
 
     userTracker.create();
-
 }
 
 
@@ -96,34 +97,58 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
     const nite::Array<nite::UserData>& users = userFrame.getUsers();
     debugImage = colorImage;
     for ( int i = 0; i < users.getSize(); ++i ) {
-        std::cout << i << '\t';
         const nite::UserData& user = users[i];
         drawBox( user );
     }
+    nite::UserId frontUserId = checkFrontUser( users );
     return debugImage;
+}
+
+
+/*---- Check Front User ----*/
+nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
+{
+    float distanceUser[ users.getSize() ];
+    nite::UserId distanceUserId[ users.getSize() ];
+
+    for ( int i = 0; i < users.getSize(); ++i ) {
+        const nite::UserData& user = users[i];
+        distanceUser[i] = user.getCenterOfMass().z;
+        distanceUserId[i] = user.getId();
+    }
+    for ( int i = 1; i < users.getSize(); ++i ) {
+        if ( distanceUser[0] > distanceUser[i] ) {
+            float temp = distanceUser[0];
+            distanceUser[0] = distanceUser[i];
+            distanceUser[i] = temp;
+
+            nite::UserId temp_Id = distanceUserId[0];
+            distanceUserId[0] = distanceUserId[i];
+            distanceUserId[i] = temp_Id;
+        }
+    }
+    return distanceUserId[0];
 }
 
 
 /*---- Draw Bounding Box ----*/
 void Xtion::drawBox( const nite::UserData& user )
 {
-        const nite::BoundingBox& box = user.getBoundingBox();
+    const nite::BoundingBox& box = user.getBoundingBox();
 
-        float RHx = box.max.x, RHy = box.max.y;     // Right High
-        cv::Point RIGT_HIGH = cvPoint( (int)RHx, (int)RHy );
-        float RLx = box.max.x, RLy = box.min.y;     // Right Low
-        cv::Point RIGT_LOW = cvPoint( (int)RLx, (int)RLy );
-        float LHx = box.min.x, LHy = box.max.y;     // Left High
-        cv::Point LEFT_HIGH = cvPoint( (int)LHx, (int)LHy );
-        float LLx = box.min.x, LLy = box.min.y;     // Left Low
-        cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
+    float RHx = box.max.x, RHy = box.max.y;     // Right High
+    cv::Point RIGT_HIGH = cvPoint( (int)RHx, (int)RHy );
+    float RLx = box.max.x, RLy = box.min.y;     // Right Low
+    cv::Point RIGT_LOW = cvPoint( (int)RLx, (int)RLy );
+    float LHx = box.min.x, LHy = box.max.y;     // Left High
+    cv::Point LEFT_HIGH = cvPoint( (int)LHx, (int)LHy );
+    float LLx = box.min.x, LLy = box.min.y;     // Left Low
+    cv::Point LEFT_LOW = cvPoint( (int)LLx, (int)LLy );
 
-        cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0) );  // LOW
-        cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0) );  // HIGH
-        cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0) );  // LEFT
-        cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0) );  // RIGHT
-
-        std::cout << '\n';
+    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, cv::Scalar(0,255,0) );  // LOW
+    cv::line( debugImage, LEFT_LOW , RIGT_LOW , cv::Scalar(0,255,0) );  // HIGH
+    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , cv::Scalar(0,255,0) );  // LEFT
+    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , cv::Scalar(0,255,0) );  // RIGHT
 }
 
 
