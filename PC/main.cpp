@@ -26,6 +26,31 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
+
+/******* Pose Class *******/
+class Pose
+{
+    public:
+        int BRUNA;
+        int MAJOKO;
+        int OBAKE;
+        int KAIDAN;
+        int NEKO;
+        int KING;
+        int NONE;
+        Pose()
+        {
+            BRUNA = 0;
+            MAJOKO = 1;
+            OBAKE = 2;
+            KAIDAN = 3;
+            NEKO = 4;
+            KING = 5;
+        }
+};
+
+
+
 /******* Xtion Class *******/
 class Xtion
 {
@@ -51,32 +76,9 @@ class Xtion
         cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
+        int beforeRecoNum;
+        Pose beforePose;
 };
-
-
-
-/******* Pose Class *******/
-class Pose
-{
-    public:
-        int BRUNA;
-        int MAJOKO;
-        int OBAKE;
-        int KAIDAN;
-        int NEKO;
-        int KING;
-    private:
-        Pose()
-        {
-            BRUNA = 0;
-            MAJOKO = 1;
-            OBAKE = 2;
-            KAIDAN = 3;
-            NEKO = 4;
-            KING = 5;
-        }
-};
-
 
 
 /*---- Initialize ----*/
@@ -89,8 +91,8 @@ Xtion::Xtion()
 
     userTracker.create();
 
-    //debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
-
+    debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
+    beforeRecoNum = 20;
 }
 
 
@@ -164,7 +166,6 @@ void Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
             drawBox( user, 0 );     // Draw box of other user
         }
     }
-    debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
     putDebugText( users );
 }
 
@@ -227,9 +228,15 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 /*---- Put Debug Text ----*/
 void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
 {
-    std::stringstream ss;
-    ss << "RecoNum: " << users.getSize();
-    cv::putText( debugImage, ss.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+    if ( beforeRecoNum != users.getSize() ) {
+        debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );      // Clean image
+    }
+    else {
+        std::stringstream ss;
+        ss << "RecoNum: " << users.getSize();
+        cv::putText( debugImage, ss.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+    }
+    beforeRecoNum = users.getSize();
 }
 
 
