@@ -65,7 +65,7 @@ class Xtion
         void drawBox( const nite::UserData& user, int flag );
         void changeResolution( openni::VideoStream& stream );
         void trackingUser( const nite::UserData& user );
-        void showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user );
+        void showSkeleton( nite::UserTracker& userTracker, const nite::UserData& user );
         void putDebugText( const nite::Array<nite::UserData>& users );
         void printWindow();
     private:
@@ -75,6 +75,7 @@ class Xtion
         cv::Mat colorImage;     // ColorStream image ( colorImage )
         cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
+        cv::Mat direcImage;     // Direction Print image ( derecImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
         int beforeRecoNum;
         Pose beforePose;
@@ -107,11 +108,9 @@ void Xtion::update()
     userTracker.readFrame( &userFrame );            // Read Frame
     makeDebugStream( userFrame );      // Make debugStream
 
-    showUsersStream( userFrame );      // #=# DEBUG #=#
+    //showUsersStream( userFrame );      // #=# DEBUG #=#
 
     printWindow();
-
-    //cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 }
 
 
@@ -133,6 +132,8 @@ void Xtion::printWindow()
     cv::namedWindow( windowName, CV_WINDOW_AUTOSIZE );
     cv::imshow( windowName, baseImage );
     cvMoveWindow( windowName, 80, 50 );
+
+    //cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 }
 
 
@@ -177,7 +178,7 @@ void Xtion::trackingUser( const nite::UserData& user )
         userTracker.startSkeletonTracking( user.getId() );
     }
     else if ( !user.isLost() ) {
-        showSkeleton( depthImage, userTracker, user );
+        showSkeleton( userTracker, user );
     }
 }
 
@@ -278,7 +279,7 @@ void Xtion::changeResolution( openni::VideoStream& stream )     // Don't have to
 
 
 /*---- Show User Skeleton ----*/
-void Xtion::showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user )
+void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& user )
 {
     const nite::Skeleton& skeelton = user.getSkeleton();
     if ( skeelton.getState() != nite::SKELETON_TRACKED ) {
