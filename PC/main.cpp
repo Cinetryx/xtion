@@ -90,7 +90,7 @@ void Xtion::update()
 /*---- Print Window ----*/
 void Xtion::printWindow()
 {
-    cv::Mat backImage = cv::imread( "Background.png" );
+    cv::Mat backImage = cv::imread( "Images/Background.png" );
     cv::Mat baseimage( cv::Size( 1366, 768 ), CV_8UC3 );
 
     cv::Mat RoiBack( baseimage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
@@ -99,9 +99,10 @@ void Xtion::printWindow()
     backImage.copyTo( RoiBack );
     debugImage.copyTo( RoiDebug );
 
-    cv::namedWindow( "ETOSHAN", CV_WINDOW_AUTOSIZE );
-    cv::imshow( "ETOSHAN", baseimage );
-    cvMoveWindow( "ETOSHAN", 80, 50 );
+    const char windowName[] = "Etoshan  -NITOyC-  by Tokunn";
+    cv::namedWindow( windowName, CV_WINDOW_AUTOSIZE );
+    cv::imshow( windowName, baseimage );
+    cvMoveWindow( windowName, 80, 50 );
 }
 
 
