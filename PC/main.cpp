@@ -77,7 +77,7 @@ Xtion::Xtion()
     userTracker.create();
 
     debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
-    timeImage = cv::Mat( cv::Size( 270, 50 ), CV_8UC3 );
+    timeImage = cv::Mat( cv::Size( 230, 30 ), CV_8UC3 );
 
     beforeRecoNum = 20;
     countPose = 0;
@@ -112,7 +112,7 @@ void Xtion::printWindow()
     timeImage = cv::imread( "Images/Time/time.png" );
 
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
-    cv::Mat RoiTime( baseImage, cv::Rect( 1040, 283, timeImage.cols, timeImage.rows ) );
+    cv::Mat RoiTime( baseImage, cv::Rect( 1065, 295, timeImage.cols, timeImage.rows ) );
     cv::Mat RoiDebug( baseImage, cv::Rect( 980, 110, debugImage.cols, debugImage.rows ) );
     cv::Mat RoiCamera( baseImage, cv::Rect( 980, 460, cameraImage.cols, cameraImage.rows ) );
 
