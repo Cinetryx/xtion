@@ -22,6 +22,7 @@
 #include <netinet/in.h>
 // OpenCV
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 
@@ -40,6 +41,7 @@ class Xtion
         void drawBox( const nite::UserData& user, int flag );
         void changeResolution( openni::VideoStream& stream );
         void trackingUser( const nite::UserData& user );
+        void printWindow();
         void showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user );
 
 
@@ -77,9 +79,29 @@ void Xtion::update()
     debugImage = makeDebugStream( userFrame );      // Make debugStream
 
     depthImage = showUsersStream( userFrame );      // #=# DEBUG #=#
-    cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
 
-    cv::imshow( "Debug Frame", debugImage );
+    printWindow();
+
+    //cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
+
+}
+
+
+/*---- Print Window ----*/
+void Xtion::printWindow()
+{
+    cv::Mat backImage = cv::imread( "Background.png" );
+    cv::Mat baseimage( cv::Size( 1366, 768 ), CV_8UC3 );
+
+    cv::Mat RoiBack( baseimage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
+    cv::Mat RoiDebug( baseimage, cv::Rect( 985, 470, debugImage.cols, debugImage.rows ) );
+
+    backImage.copyTo( RoiBack );
+    debugImage.copyTo( RoiDebug );
+
+    cv::namedWindow( "ETOSHAN", CV_WINDOW_AUTOSIZE );
+    cv::imshow( "ETOSHAN", baseimage );
+    cvMoveWindow( "ETOSHAN", 80, 50 );
 }
 
 
