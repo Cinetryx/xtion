@@ -27,28 +27,7 @@
 
 
 
-/******* Pose Class *******/
-class Pose
-{
-    public:
-        int BRUNA;
-        int MAJOKO;
-        int OBAKE;
-        int KAIDAN;
-        int NEKO;
-        int KING;
-        int NONE;
-        Pose()
-        {
-            BRUNA = 0;
-            MAJOKO = 1;
-            OBAKE = 2;
-            KAIDAN = 3;
-            NEKO = 4;
-            KING = 5;
-        }
-};
-
+enum Pose{ NONE, MAJOKO, OBAKE, KAIDAN, NEKO, KING, BRUNA };
 
 
 /******* Xtion Class *******/
@@ -67,6 +46,7 @@ class Xtion
         void trackingUser( const nite::UserData& user );
         void showSkeleton( nite::UserTracker& userTracker, const nite::UserData& user );
         void putDebugText( const nite::Array<nite::UserData>& users );
+        Pose checkPose( const nite::Skeleton& skeelton );
         void printWindow();
     private:
         openni::Device device;  // Using device
@@ -77,8 +57,10 @@ class Xtion
         cv::Mat debugImage;     // Debug Print image ( debugImage )
         cv::Mat direcImage;     // Direction Print image ( derecImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
-        int beforeRecoNum;
         Pose beforePose;
+        Pose pose;
+        int countPose;
+        int beforeRecoNum;
 };
 
 
@@ -94,6 +76,8 @@ Xtion::Xtion()
 
     debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
     beforeRecoNum = 20;
+    countPose = 0;
+    beforePose = NONE;
 }
 
 
@@ -233,9 +217,11 @@ void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
         debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );      // Clean image
     }
     else {
-        std::stringstream ss;
-        ss << "RecoNum: " << users.getSize();
-        cv::putText( debugImage, ss.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+        std::stringstream recoNum, poseTime;
+        recoNum << "RecoNum: " << users.getSize();
+        poseTime << "PoseTime: " << countPose;
+        cv::putText( debugImage, recoNum.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+        cv::putText( debugImage, poseTime.str(), cv::Point( 5, 80 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
     }
     beforeRecoNum = users.getSize();
 }
@@ -258,7 +244,6 @@ void Xtion::drawBox( const nite::UserData& user, int flag )
     cv::Scalar color( 0, 255, 0 );
     if ( flag ) {
         color = cv::Scalar( 255, 255, 0 );
-        //color = cv::Scalar( 0, 0, 255 );
     }
 
     cv::line( cameraImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
@@ -294,8 +279,37 @@ void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& 
         const nite::Point3f& position = joint.getPosition();
         float x = 0, y = 0;
         userTracker.convertJointCoordinatesToDepth( position.x, position.y, position.z, &x, &y );
-        cv::circle( cameraImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 0, 255 ), -1 );
+        cv::circle( cameraImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 128, 255 ), -1 );
     }
+
+    pose = checkPose( skeelton );
+    if ( pose != NONE && pose == beforePose ) {
+        countPose++;
+    }
+    else {
+        countPose = 0;
+        beforePose = pose;
+    }
+    if ( countPose > 60 ) {
+        countPose = 0;
+        beforePose = NONE;
+    }
+}
+
+
+/*---- Check Pose and show Book image ----*/
+Pose Xtion::checkPose( const nite::Skeleton& skeelton )
+{
+    Pose checkPose = NONE;
+
+    const nite::Point3f& joint_head = ( skeelton.getJoint( nite::JOINT_HEAD ) ).getPosition();
+    const nite::Point3f& joint_neck = ( skeelton.getJoint( nite::JOINT_NECK ) ).getPosition();
+    const nite::Point3f& joint_torso = ( skeelton.getJoint( nite::JOINT_TORSO ) ).getPosition();
+    const nite::Point3f& joint_left_hand = ( skeelton.getJoint( nite::JOINT_LEFT_HAND ) ).getPosition();
+    const nite::Point3f& joint_rigt_hand = ( skeelton.getJoint( nite::JOINT_RIGHT_HAND ) ).getPosition();
+
+    /*'' Check MAJOKO ''*/
+    return checkPose;
 }
 
 
