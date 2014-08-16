@@ -12,6 +12,9 @@
 // Math and String
 #include <math.h>
 #include <string.h>
+#include <cstdlib>
+#include <sstream>
+#include <iomanip>
 // Xtion
 #include <NiTE.h>
 #include <OpenNI.h>
@@ -109,7 +112,18 @@ void Xtion::printWindow()
 {
     cv::Mat baseImage = cv::Mat( cv::Size( 1366, 768 ), CV_8UC3 );
     cv::Mat backImage = cv::imread( "Images/Background.png" );
-    timeImage = cv::imread( "Images/Time/time.png" );
+
+    std::ostringstream timeName;    // Make file name
+    timeName << "Images/Time/" << countPose << ".png";
+    std::string timeImageName = timeName.str();
+
+    int len = timeImageName.length();
+    char* fname = new char[len+1];
+    memcpy( fname, timeImageName.c_str(), len+1 );
+    std::cout << fname << '\n';
+
+    //timeImage = cv::imread( "Images/Time/time.png" );
+    timeImage = cv::imread( fname );
 
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
     cv::Mat RoiTime( baseImage, cv::Rect( 1065, 295, timeImage.cols, timeImage.rows ) );
