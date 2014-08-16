@@ -56,6 +56,7 @@ class Xtion
         cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
         cv::Mat direcImage;     // Direction Print image ( direcImage )
+        cv::Mat timeImage;      // Time Print image ( timeImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
         Pose beforePose;
         Pose afterimagePose;
@@ -76,6 +77,8 @@ Xtion::Xtion()
     userTracker.create();
 
     debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
+    timeImage = cv::Mat( cv::Size( 270, 50 ), CV_8UC3 );
+
     beforeRecoNum = 20;
     countPose = 0;
     pose = NONE;
@@ -108,10 +111,12 @@ void Xtion::printWindow()
     cv::Mat backImage = cv::imread( "Images/Background.png" );
 
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
+    cv::Mat RoiTime( baseImage, cv::Rect( 1040, 283, timeImage.cols, timeImage.rows ) );
     cv::Mat RoiDebug( baseImage, cv::Rect( 980, 110, debugImage.cols, debugImage.rows ) );
     cv::Mat RoiCamera( baseImage, cv::Rect( 980, 460, cameraImage.cols, cameraImage.rows ) );
 
     backImage.copyTo( RoiBack );
+    timeImage.copyTo( RoiTime );
     debugImage.copyTo( RoiDebug );
     cameraImage.copyTo( RoiCamera );
 
