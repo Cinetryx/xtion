@@ -27,7 +27,7 @@
 
 
 
-enum Pose{ NONE, MAJOKO, OBAKE, KAIDAN, NEKO, KING, BRUNA };
+enum Pose{ NONE=0, MAJOKO=1, OBAKE=2, KAIDAN=3, NEKO=4, KING=5, BRUNA=6 };
 
 
 /******* Xtion Class *******/
@@ -55,9 +55,10 @@ class Xtion
         cv::Mat colorImage;     // ColorStream image ( colorImage )
         cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
-        cv::Mat direcImage;     // Direction Print image ( derecImage )
+        cv::Mat direcImage;     // Direction Print image ( direcImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
         Pose beforePose;
+        Pose afterimagePose;
         Pose pose;
         int countPose;
         int beforeRecoNum;
@@ -77,7 +78,9 @@ Xtion::Xtion()
     debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
     beforeRecoNum = 20;
     countPose = 0;
+    pose = NONE;
     beforePose = NONE;
+    afterimagePose = NONE;
 }
 
 
@@ -213,15 +216,17 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 /*---- Put Debug Text ----*/
 void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
 {
-    if ( beforeRecoNum != users.getSize() ) {
+    char poseName[7][7] = { "NONE", "MAJOKO", "OBAKE", "KAIDAN", "NEKO", "KING", "BRUNA" };
+
+    if ( beforeRecoNum != users.getSize() || pose != afterimagePose ) {
         debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );      // Clean image
     }
     else {
-        std::stringstream recoNum, poseTime;
+        std::stringstream recoNum, posename;
         recoNum << "RecoNum: " << users.getSize();
-        poseTime << "PoseTime: " << countPose;
+        posename << "Pose: " << poseName[ pose ];
         cv::putText( debugImage, recoNum.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
-        cv::putText( debugImage, poseTime.str(), cv::Point( 5, 80 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+        cv::putText( debugImage, posename.str(), cv::Point( 5, 85 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
     }
     beforeRecoNum = users.getSize();
 }
@@ -283,6 +288,7 @@ void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& 
     }
 
     pose = checkPose( skeelton );
+    afterimagePose = beforePose;
     if ( pose != NONE && pose == beforePose ) {
         countPose++;
     }
@@ -309,6 +315,21 @@ Pose Xtion::checkPose( const nite::Skeleton& skeelton )
     const nite::Point3f& joint_rigt_hand = ( skeelton.getJoint( nite::JOINT_RIGHT_HAND ) ).getPosition();
 
     /*'' Check MAJOKO ''*/
+    if ( joint_head.y < joint_left_hand.y && joint_rigt_hand.y < joint_torso.y ) {
+        checkPose = MAJOKO;
+        direcImage = cv::imread( "Images/MAJOKO.jpg" );
+    }
+    /*'' Check NEKO ''*/
+    if ( joint_head.y < joint_rigt_hand.y && joint_left_hand.y < joint_torso.y ) {
+        checkPose = NEKO;
+        direcImage = cv::imread( "Images/NEKO.jpg" );
+    }
+    /*'' Check KAIDAN ''*/
+    if ( ( ( joint_left_hand.y < joint_neck.y ) && ( joint_rigt_hand.y < joint_neck.y ) ) && ( ( joint_torso.y < joint_left_hand.y ) && ( joint_torso.y < joint_rigt_hand.y ) ) ) {
+        checkPose = KAIDAN;
+        direcImage = cv::imread( "Images/KAIDAN.jpg" );
+    }
+
     return checkPose;
 }
 
