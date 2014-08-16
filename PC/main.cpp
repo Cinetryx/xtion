@@ -109,6 +109,7 @@ void Xtion::printWindow()
 {
     cv::Mat baseImage = cv::Mat( cv::Size( 1366, 768 ), CV_8UC3 );
     cv::Mat backImage = cv::imread( "Images/Background.png" );
+    timeImage = cv::imread( "Images/Time/time.png" );
 
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
     cv::Mat RoiTime( baseImage, cv::Rect( 1040, 283, timeImage.cols, timeImage.rows ) );
