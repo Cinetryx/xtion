@@ -178,6 +178,7 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
             }
         }
     }
+    /*
     for ( int i = 0; i < users.getSize(); ++i ) {       // #=# DEBUGSTART #=#
         std::cout << distanceUserId[i] << '\t';
     }
@@ -189,6 +190,7 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
         debug = 0;
     }
     debug++;                    // #=# DEBUGEND #=#
+    */
 
     return distanceUserId[0];
 }
