@@ -26,7 +26,6 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
-
 /******* Xtion Class *******/
 class Xtion
 {
@@ -34,25 +33,50 @@ class Xtion
         Xtion();
         void update();
     private:
-        cv::Mat convColorStream( openni::VideoFrameRef& colorFrame );
-        cv::Mat makeDebugStream( nite::UserTrackerFrameRef& userFrame );
-        cv::Mat showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
+        void convColorStream( openni::VideoFrameRef& colorFrame );
+        void makeDebugStream( nite::UserTrackerFrameRef& userFrame );
+        void showUsersStream( nite::UserTrackerFrameRef& userFrame );    // #=# DEBUG #=#
         nite::UserId checkFrontUser( const nite::Array<nite::UserData>& users );
         void drawBox( const nite::UserData& user, int flag );
         void changeResolution( openni::VideoStream& stream );
         void trackingUser( const nite::UserData& user );
-        void printWindow();
         void showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, const nite::UserData& user );
-
-
+        void putDebugText( const nite::Array<nite::UserData>& users );
+        void printWindow();
     private:
         openni::Device device;  // Using device
         openni::VideoStream colorStream;
         nite::UserTracker userTracker;
         cv::Mat colorImage;     // ColorStream image ( colorImage )
+        cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
 };
+
+
+
+/******* Pose Class *******/
+class Pose
+{
+    public:
+        int BRUNA;
+        int MAJOKO;
+        int OBAKE;
+        int KAIDAN;
+        int NEKO;
+        int KING;
+    private:
+        Pose()
+        {
+            BRUNA = 0;
+            MAJOKO = 1;
+            OBAKE = 2;
+            KAIDAN = 3;
+            NEKO = 4;
+            KING = 5;
+        }
+};
+
 
 
 /*---- Initialize ----*/
@@ -64,6 +88,9 @@ Xtion::Xtion()
     colorStream.start();
 
     userTracker.create();
+
+    //debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
+
 }
 
 
@@ -72,59 +99,59 @@ void Xtion::update()
 {
     openni::VideoFrameRef colorFrame;               // will in a ColorStream ( colorFrame )
     colorStream.readFrame( &colorFrame );           // Read Frame
-    colorImage = convColorStream( colorFrame );     // Convert colorStream
+    convColorStream( colorFrame );     // Convert colorStream
 
     nite::UserTrackerFrameRef userFrame;            // Will in a DebugStream ( userFrame )
     userTracker.readFrame( &userFrame );            // Read Frame
-    debugImage = makeDebugStream( userFrame );      // Make debugStream
+    makeDebugStream( userFrame );      // Make debugStream
 
-    depthImage = showUsersStream( userFrame );      // #=# DEBUG #=#
+    showUsersStream( userFrame );      // #=# DEBUG #=#
 
     printWindow();
 
     //cv::imshow( "Depth Frame", depthImage );        // #=# DEBUG #=#
-
 }
 
 
 /*---- Print Window ----*/
 void Xtion::printWindow()
 {
+    cv::Mat baseImage = cv::Mat( cv::Size( 1366, 768 ), CV_8UC3 );
     cv::Mat backImage = cv::imread( "Images/Background.png" );
-    cv::Mat baseimage( cv::Size( 1366, 768 ), CV_8UC3 );
 
-    cv::Mat RoiBack( baseimage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
-    cv::Mat RoiDebug( baseimage, cv::Rect( 985, 470, debugImage.cols, debugImage.rows ) );
+    cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
+    cv::Mat RoiDebug( baseImage, cv::Rect( 980, 110, debugImage.cols, debugImage.rows ) );
+    cv::Mat RoiCamera( baseImage, cv::Rect( 980, 460, cameraImage.cols, cameraImage.rows ) );
 
     backImage.copyTo( RoiBack );
     debugImage.copyTo( RoiDebug );
+    cameraImage.copyTo( RoiCamera );
 
     const char windowName[] = "Etoshan  -NITOyC-  by Tokunn";
     cv::namedWindow( windowName, CV_WINDOW_AUTOSIZE );
-    cv::imshow( windowName, baseimage );
+    cv::imshow( windowName, baseImage );
     cvMoveWindow( windowName, 80, 50 );
 }
 
 
 /*---- Convert OpenNI format to OpenCV format ----*/
-cv::Mat Xtion::convColorStream( openni::VideoFrameRef& colorFrame )
+void Xtion::convColorStream( openni::VideoFrameRef& colorFrame )
 {
     colorImage = cv::Mat( colorFrame.getHeight(),
                                   colorFrame.getWidth(),
                                   CV_8UC3,
                                   (unsigned char*)colorFrame.getData() );
     cv::cvtColor( colorImage, colorImage, CV_RGB2BGR );
-    return colorImage;
 }
 
 
 /*---- Make DebugStream ----*/
-cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
+void Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 {
     const nite::Array<nite::UserData>& users = userFrame.getUsers();
 
     nite::UserId frontUserId = checkFrontUser( users );     // Get front user
-    debugImage = colorImage;
+    cameraImage = colorImage;
 
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
@@ -137,7 +164,8 @@ cv::Mat Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
             drawBox( user, 0 );     // Draw box of other user
         }
     }
-    return debugImage;
+    debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
+    putDebugText( users );
 }
 
 
@@ -196,6 +224,15 @@ nite::UserId Xtion::checkFrontUser( const nite::Array<nite::UserData>& users )
 }
 
 
+/*---- Put Debug Text ----*/
+void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
+{
+    std::stringstream ss;
+    ss << "RecoNum: " << users.getSize();
+    cv::putText( debugImage, ss.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+}
+
+
 /*---- Draw Bounding Box ----*/
 void Xtion::drawBox( const nite::UserData& user, int flag )
 {
@@ -216,10 +253,10 @@ void Xtion::drawBox( const nite::UserData& user, int flag )
         //color = cv::Scalar( 0, 0, 255 );
     }
 
-    cv::line( debugImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
-    cv::line( debugImage, LEFT_LOW , RIGT_LOW , color, 3 );  // HIGH
-    cv::line( debugImage, LEFT_HIGH, LEFT_LOW , color, 3 );  // LEFT
-    cv::line( debugImage, RIGT_HIGH, RIGT_LOW , color, 3 );  // RIGHT
+    cv::line( cameraImage, LEFT_HIGH, RIGT_HIGH, color, 3 );  // LOW
+    cv::line( cameraImage, LEFT_LOW , RIGT_LOW , color, 3 );  // HIGH
+    cv::line( cameraImage, LEFT_HIGH, LEFT_LOW , color, 3 );  // LEFT
+    cv::line( cameraImage, RIGT_HIGH, RIGT_LOW , color, 3 );  // RIGHT
 }
 
 
@@ -249,13 +286,13 @@ void Xtion::showSkeleton( cv::Mat& depthImage, nite::UserTracker& userTracker, c
         const nite::Point3f& position = joint.getPosition();
         float x = 0, y = 0;
         userTracker.convertJointCoordinatesToDepth( position.x, position.y, position.z, &x, &y );
-        cv::circle( debugImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 0, 255 ), -1 );
+        cv::circle( cameraImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 0, 255 ), -1 );
     }
 }
 
 
 /*---- Show Users on Depth ----*/
-cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #=# DEBUG #=#
+void Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #=# DEBUG #=#
 {
     static const cv::Scalar colors[] = {
         cv::Scalar( 1, 0, 0 ),
@@ -290,7 +327,6 @@ cv::Mat Xtion::showUsersStream( nite::UserTrackerFrameRef& userFrame )      // #
             }
         }
     }
-    return depthImage;
 }
 
 
@@ -316,6 +352,5 @@ int main()
     catch ( std::exception& ) {
         std::cout << openni::OpenNI::getExtendedError() << std::endl;
     }
-
     return 0;
 }
