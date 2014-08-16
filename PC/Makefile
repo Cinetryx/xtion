@@ -40,6 +40,6 @@ include CommonCppMakefile
 
 .PHONY: copy-redist
 copy-redist:
-	cp -R $(OPENNI2_REDIST)/* $(NITE2_REDIST64)/* $(OUT_DIR)
+	cp -R $(OPENNI2_REDIST)/* $(NITE2_REDIST64)/* ../UI/Images/ $(OUT_DIR)
 
 $(OUTPUT_FILE): copy-redist
