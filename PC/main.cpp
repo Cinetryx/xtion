@@ -120,7 +120,7 @@ void Xtion::printWindow()
     int len = timeImageName.length();   // Convert string to char&
     char* fname = new char[len+1];
     memcpy( fname, timeImageName.c_str(), len+1 );
-    std::cout << fname << '\n';
+    //std::cout << fname << '\n';
 
     //timeImage = cv::imread( "Images/Time/time.png" );
     timeImage = cv::imread( fname );
