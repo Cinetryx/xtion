@@ -38,7 +38,7 @@ class Xtion
 {
     public:
         Xtion();
-        void update();
+        int update();
     private:
         void convColorStream( openni::VideoFrameRef& colorFrame );
         void makeDebugStream( nite::UserTrackerFrameRef& userFrame );
@@ -91,7 +91,7 @@ Xtion::Xtion()
 
 
 /*---- Update frame ----*/
-void Xtion::update()
+int Xtion::update()
 {
     openni::VideoFrameRef colorFrame;               // will in a ColorStream ( colorFrame )
     colorStream.readFrame( &colorFrame );           // Read Frame
@@ -104,6 +104,8 @@ void Xtion::update()
     //showUsersStream( userFrame );      // #=# DEBUG #=#
 
     printWindow();
+
+    return countPose;
 }
 
 
@@ -112,7 +114,7 @@ void Xtion::printWindow()
 {
     cv::Mat baseImage = cv::Mat( cv::Size( 1366, 768 ), CV_8UC3 );
     cv::Mat backImage;
-    if ( countPose > 55 ) {
+    if ( countPose >= 60 ) {
         backImage = cv::imread( "Images/Background3.png" );
     }
     else {
@@ -183,6 +185,9 @@ void Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
         else {
             drawBox( user, 0 );     // Draw box of other user
         }
+    }
+
+    if ( users.getSize() == 0 ) {
     }
     putDebugText( users );
 }
@@ -422,9 +427,18 @@ int main()
         std::cout << "ChePo 3\n";   // #=# DEBUG #=#
         
         while (true) {
-            app.update();
-            int key = cv::waitKey( 10 );
-            if ( key == 27 ) {
+            if ( app.update() >= 60 ) {  // Check Pose count
+                while (true) {      // wait and check key
+                    int Key = cv::waitKey( 10 );
+                    if ( Key == 32 ) {  // Space Key
+                        break;
+                    }
+                    else if ( Key == 27 ) { // Escape Key
+                        return 0;
+                    }
+                }
+            }
+            if ( cv::waitKey( 10 ) == 27 ) {
                 break;
             }
         }
