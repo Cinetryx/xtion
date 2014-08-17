@@ -38,7 +38,8 @@ class Xtion
 {
     public:
         Xtion();
-        int update();
+        void update();
+        bool poseCheckFlag;
     private:
         void convColorStream( openni::VideoFrameRef& colorFrame );
         void makeDebugStream( nite::UserTrackerFrameRef& userFrame );
@@ -87,11 +88,12 @@ Xtion::Xtion()
     pose = NONE;
     beforePose = NONE;
     afterimagePose = NONE;
+    poseCheckFlag = true;
 }
 
 
 /*---- Update frame ----*/
-int Xtion::update()
+void Xtion::update()
 {
     openni::VideoFrameRef colorFrame;               // will in a ColorStream ( colorFrame )
     colorStream.readFrame( &colorFrame );           // Read Frame
@@ -104,8 +106,6 @@ int Xtion::update()
     //showUsersStream( userFrame );      // #=# DEBUG #=#
 
     printWindow();
-
-    return countPose;
 }
 
 
@@ -324,17 +324,21 @@ void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& 
 
     pose = checkPose( skeelton );   // Check Pose
     afterimagePose = beforePose;
-    if ( pose != NONE && pose == beforePose ) {
-        countPose++;
-    }
-    else {
-        countPose = 0;
-        beforePose = pose;
-    }
-    if ( countPose > 60 ) {
-        countPose = 0;
-        beforePose = NONE;
-        std::cout << "Init !! \n";
+    if ( poseCheckFlag ) {
+        if ( pose != NONE && pose == beforePose ) {
+            countPose++;
+        }
+        else {
+            countPose = 0;
+            beforePose = pose;
+        }
+        if ( countPose > 60 ) {
+            countPose = 0;
+            beforePose = NONE;
+        }
+        else if ( countPose == 60 ) {
+            poseCheckFlag = false;
+        }
     }
 }
 
@@ -429,10 +433,15 @@ int main()
         
         while (true) {
             app.update();
-            if ( cv::waitKey( 10 ) == 27 ) {
+            int Key = cv::waitKey( 10 );
+            if ( Key == 32 ) {      // Space Key
+                app.poseCheckFlag = true;
+            }
+            else if ( Key == 27 ) { // Escape Key
                 break;
             }
         }
+
     }
     catch ( std::exception& ) {
         std::cout << openni::OpenNI::getExtendedError() << std::endl;
