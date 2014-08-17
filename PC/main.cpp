@@ -117,7 +117,7 @@ void Xtion::printWindow()
     timeName << "Images/Time/" << countPose << ".png";
     std::string timeImageName = timeName.str();
 
-    int len = timeImageName.length();
+    int len = timeImageName.length();   // Convert string to char&
     char* fname = new char[len+1];
     memcpy( fname, timeImageName.c_str(), len+1 );
     std::cout << fname << '\n';
@@ -128,11 +128,13 @@ void Xtion::printWindow()
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
     cv::Mat RoiTime( baseImage, cv::Rect( 1065, 295, timeImage.cols, timeImage.rows ) );
     cv::Mat RoiDebug( baseImage, cv::Rect( 980, 110, debugImage.cols, debugImage.rows ) );
+    cv::Mat RoiDirec( baseImage, cv::Rect( 100, 110, direcImage.cols, direcImage.rows ) );
     cv::Mat RoiCamera( baseImage, cv::Rect( 980, 460, cameraImage.cols, cameraImage.rows ) );
 
     backImage.copyTo( RoiBack );
     timeImage.copyTo( RoiTime );
     debugImage.copyTo( RoiDebug );
+    direcImage.copyTo( RoiDirec );
     cameraImage.copyTo( RoiCamera );
 
     const char windowName[] = "Etoshan  -NITOyC-  by Tokunn";
@@ -162,6 +164,8 @@ void Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
 
     nite::UserId frontUserId = checkFrontUser( users );     // Get front user
     cameraImage = colorImage;
+
+    direcImage = cv::imread( "Images/Default.jpg" );
 
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
@@ -307,7 +311,7 @@ void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& 
         cv::circle( cameraImage, cvPoint( (int)x, (int)y ), 5, cv::Scalar( 0, 128, 255 ), -1 );
     }
 
-    pose = checkPose( skeelton );
+    pose = checkPose( skeelton );   // Check Pose
     afterimagePose = beforePose;
     if ( pose != NONE && pose == beforePose ) {
         countPose++;
@@ -347,9 +351,11 @@ Pose Xtion::checkPose( const nite::Skeleton& skeelton )
     /*'' Check KAIDAN ''*/
     if ( ( ( joint_left_hand.y < joint_neck.y ) && ( joint_rigt_hand.y < joint_neck.y ) ) && ( ( joint_torso.y < joint_left_hand.y ) && ( joint_torso.y < joint_rigt_hand.y ) ) ) {
         checkPose = KAIDAN;
-        direcImage = cv::imread( "Images/KAIDAN.jpg" );
+        direcImage = cv::imread( "Images/KAIDAN.png" );
     }
-
+    if ( direcImage.empty() ) {     // Check Error
+        std::cout << "Nofile\n";
+    }
     return checkPose;
 }
 
