@@ -59,6 +59,7 @@ class Xtion
         cv::Mat colorImage;     // ColorStream image ( colorImage )
         cv::Mat cameraImage;     // Camera Print image ( cameraImage )
         cv::Mat debugImage;     // Debug Print image ( debugImage )
+        cv::Mat debugBrack;     // Debug print image Brack ( debugBrack )
         cv::Mat direcImage;     // Direction Print image ( direcImage )
         cv::Mat timeImage;      // Time Print image ( timeImage )
         cv::Mat depthImage;     // Depth Print image ( depthImage )     #=# DEBUG #=#
@@ -81,6 +82,7 @@ Xtion::Xtion()
     userTracker.create();
 
     debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );
+    debugBrack = cv::imread( "Images/DEBUG.png" );
     timeImage = cv::Mat( cv::Size( 230, 30 ), CV_8UC3 );
 
     beforeRecoNum = 20;
@@ -254,7 +256,8 @@ void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
     char poseName[7][7] = { "NONE", "MAJOKO", "OBAKE", "KAIDAN", "NEKO", "KING", "BRUNA" };
 
     if ( beforeRecoNum != users.getSize() || pose != afterimagePose ) {
-        debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );      // Clean image
+        //debugImage = cv::Mat( cv::Size( 300, 100 ), CV_8UC3 );      // Clean image
+        debugImage = debugBrack;
     }
     else {
         std::stringstream recoNum, posename;
