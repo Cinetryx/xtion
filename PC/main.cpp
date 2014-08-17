@@ -334,6 +334,7 @@ void Xtion::showSkeleton( nite::UserTracker& userTracker, const nite::UserData& 
     if ( countPose > 60 ) {
         countPose = 0;
         beforePose = NONE;
+        std::cout << "Init !! \n";
     }
 }
 
