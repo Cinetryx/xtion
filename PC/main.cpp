@@ -130,9 +130,7 @@ void Xtion::printWindow()
     int len = timeImageName.length();   // Convert string to char&
     char* fname = new char[len+1];
     memcpy( fname, timeImageName.c_str(), len+1 );
-    //std::cout << fname << '\n';
 
-    //timeImage = cv::imread( "Images/Time/time.png" );
     timeImage = cv::imread( fname );
 
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
@@ -358,15 +356,15 @@ Pose Xtion::checkPose( const nite::Skeleton& skeelton )
     const nite::Point3f& joint_left_hand = ( skeelton.getJoint( nite::JOINT_LEFT_HAND ) ).getPosition();
     const nite::Point3f& joint_rigt_hand = ( skeelton.getJoint( nite::JOINT_RIGHT_HAND ) ).getPosition();
 
-    /*'' Check MAJOKO ''*/
-    if ( joint_head.y < joint_left_hand.y && joint_rigt_hand.y < joint_torso.y ) {
-        checkPose = MAJOKO;
-        direcImage = cv::imread( "Images/MAJOKO.png" );
-    }
     /*'' Check NEKO ''*/
-    if ( joint_head.y < joint_rigt_hand.y && joint_left_hand.y < joint_torso.y ) {
+    if ( joint_head.y < joint_left_hand.y && joint_rigt_hand.y < joint_torso.y ) {
         checkPose = NEKO;
         direcImage = cv::imread( "Images/NEKO.png" );
+    }
+    /*'' Check MAJOKO ''*/
+    if ( joint_head.y < joint_rigt_hand.y && joint_left_hand.y < joint_torso.y ) {
+        checkPose = MAJOKO;
+        direcImage = cv::imread( "Images/MAJOKO.png" );
     }
     /*'' Check KAIDAN ''*/
     if ( ( ( joint_left_hand.y < joint_neck.y ) && ( joint_rigt_hand.y < joint_neck.y ) ) && ( ( joint_torso.y < joint_left_hand.y ) && ( joint_torso.y < joint_rigt_hand.y ) ) ) {
