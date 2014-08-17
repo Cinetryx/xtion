@@ -428,17 +428,7 @@ int main()
         std::cout << "ChePo 3\n";   // #=# DEBUG #=#
         
         while (true) {
-            if ( app.update() >= 60 ) {  // Check Pose count
-                while (true) {      // wait and check key
-                    int Key = cv::waitKey( 10 );
-                    if ( Key == 32 ) {  // Space Key
-                        break;
-                    }
-                    else if ( Key == 27 ) { // Escape Key
-                        return 0;
-                    }
-                }
-            }
+            app.update();
             if ( cv::waitKey( 10 ) == 27 ) {
                 break;
             }
