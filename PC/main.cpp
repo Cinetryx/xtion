@@ -128,7 +128,7 @@ void Xtion::printWindow()
     cv::Mat RoiBack( baseImage, cv::Rect( 0, 0, backImage.cols, backImage.rows ) );
     cv::Mat RoiTime( baseImage, cv::Rect( 1065, 295, timeImage.cols, timeImage.rows ) );
     cv::Mat RoiDebug( baseImage, cv::Rect( 980, 110, debugImage.cols, debugImage.rows ) );
-    cv::Mat RoiDirec( baseImage, cv::Rect( 100, 110, direcImage.cols, direcImage.rows ) );
+    cv::Mat RoiDirec( baseImage, cv::Rect( 70, 65, direcImage.cols, direcImage.rows ) );
     cv::Mat RoiCamera( baseImage, cv::Rect( 980, 460, cameraImage.cols, cameraImage.rows ) );
 
     backImage.copyTo( RoiBack );
@@ -165,7 +165,7 @@ void Xtion::makeDebugStream( nite::UserTrackerFrameRef& userFrame )
     nite::UserId frontUserId = checkFrontUser( users );     // Get front user
     cameraImage = colorImage;
 
-    direcImage = cv::imread( "Images/Default.jpg" );
+    direcImage = cv::imread( "Images/Default.png" );
 
     for ( int i = 0; i < users.getSize(); ++i ) {
         const nite::UserData& user = users[i];
