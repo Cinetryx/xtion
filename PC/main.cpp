@@ -111,7 +111,13 @@ void Xtion::update()
 void Xtion::printWindow()
 {
     cv::Mat baseImage = cv::Mat( cv::Size( 1366, 768 ), CV_8UC3 );
-    cv::Mat backImage = cv::imread( "Images/Background.png" );
+    cv::Mat backImage;
+    if ( countPose > 55 ) {
+        backImage = cv::imread( "Images/Background3.png" );
+    }
+    else {
+        backImage = cv::imread( "Images/Background.png" );
+    }
 
     std::ostringstream timeName;    // Make file name
     timeName << "Images/Time/" << countPose << ".png";
