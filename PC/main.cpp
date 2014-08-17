@@ -341,17 +341,22 @@ Pose Xtion::checkPose( const nite::Skeleton& skeelton )
     /*'' Check MAJOKO ''*/
     if ( joint_head.y < joint_left_hand.y && joint_rigt_hand.y < joint_torso.y ) {
         checkPose = MAJOKO;
-        direcImage = cv::imread( "Images/MAJOKO.jpg" );
+        direcImage = cv::imread( "Images/MAJOKO.png" );
     }
     /*'' Check NEKO ''*/
     if ( joint_head.y < joint_rigt_hand.y && joint_left_hand.y < joint_torso.y ) {
         checkPose = NEKO;
-        direcImage = cv::imread( "Images/NEKO.jpg" );
+        direcImage = cv::imread( "Images/NEKO.png" );
     }
     /*'' Check KAIDAN ''*/
     if ( ( ( joint_left_hand.y < joint_neck.y ) && ( joint_rigt_hand.y < joint_neck.y ) ) && ( ( joint_torso.y < joint_left_hand.y ) && ( joint_torso.y < joint_rigt_hand.y ) ) ) {
         checkPose = KAIDAN;
         direcImage = cv::imread( "Images/KAIDAN.png" );
+    }
+    /*'' check BRUNA ''*/
+    if ( joint_left_hand.y > joint_head.y && joint_rigt_hand.y > joint_head.y ) {
+        checkPose = BRUNA;
+        direcImage = cv::imread( "Images/BRUNA.png" );
     }
     if ( direcImage.empty() ) {     // Check Error
         std::cout << "Nofile\n";
