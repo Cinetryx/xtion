@@ -262,6 +262,7 @@ void Xtion::putDebugText( const nite::Array<nite::UserData>& users )
         posename << "Pose: " << poseName[ pose ];
         cv::putText( debugImage, recoNum.str(), cv::Point( 5, 30 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
         cv::putText( debugImage, posename.str(), cv::Point( 5, 85 ), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar( 0, 255, 0 ), 2 );
+        std::cout << recoNum.str() << '\t' << posename.str() << '\n';   // #=# DEBUG #=#
     }
     beforeRecoNum = users.getSize();
 }
